@@ -1,0 +1,15 @@
+general:
+  enable_incomplete_verification: False
+  conv_mode: matrix
+model:
+  onnx_path: ../Benchmarks/onnx/decima_mid_simple.onnx
+specification:
+  vnnlib_path: ../Benchmarks/vnnlib/decima_1_3_2.vnnlib
+solver:
+  batch_size: 1
+bab:
+  branching:
+    method: sb
+    sb_coeff_thresh: 0.1
+    input_split:
+      enable: True

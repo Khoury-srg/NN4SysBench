@@ -1,0 +1,7 @@
+Name                           Type      Forward_MACs  FPercent    Memory    MPercent      Params  PPercent    InShape    OutShape
+-----------------------------  ------  --------------  ----------  --------  ----------  --------  ----------  ---------  ----------
+/policy_net/policy_net.0/Gemm  Gemm               496  69.18%      2,048     76.76%           496  77.38%      1x30       1x16
+/policy_net/policy_net.1/Gemm  Gemm               136  18.97%      576       21.59%           136  21.22%      1x16       1x8
+/policy_net/policy_net.2/Gemm  Gemm                 9  1.26%       40        1.50%              9  1.40%       1x8        1x1
+/policy_net/policy_net.3/Tanh  Tanh                76  10.60%      4         0.15%              0  0.00%       1x1        1x1
+Total                          _                  717  100%        2,668     100%             641  100%        _          _

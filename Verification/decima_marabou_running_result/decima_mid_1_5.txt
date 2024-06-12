@@ -1,0 +1,11 @@
+InputQuery: /tmp/tmple2jfsm2
+Engine::processInputQuery: Input query (before preprocessing): 16367 equations, 33928 variables
+unsat
+Running Marabou with the following arguments:  []
+Time 10.744317770004272
+Property: ../Benchmarks/marabou_txt/decima_1_0.txt
+Number of variables: 33928
+Number of lower bounds: 17580
+Number of upper bounds: 4300
+Number of equations: 16367
+Number of non-linear constraints: 13280

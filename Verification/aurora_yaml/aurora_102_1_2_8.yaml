@@ -1,0 +1,15 @@
+general:
+  enable_incomplete_verification: False
+  conv_mode: matrix
+model:
+  onnx_path: ../Benchmarks/onnx/aurora_big_simple.onnx
+specification:
+  vnnlib_path: ../Benchmarks/vnnlib/aurora_102_1_2_8.vnnlib
+solver:
+  batch_size: 2048
+bab:
+  branching:
+    method: sb
+    sb_coeff_thresh: 0.1
+    input_split:
+      enable: True

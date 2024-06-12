@@ -1,0 +1,46 @@
+InputQuery: /tmp/tmpdls1uno4
+Engine::processInputQuery: Input query (before preprocessing): 99 equations, 130 variables
+Engine::processInputQuery: Input query (after preprocessing): 99 equations, 130 variables
+
+Input bounds:
+	x0: [  0.8568,   0.9568] 
+	x1: [  0.7441,   0.8441] 
+	x2: [  0.9655,   1.0655] 
+	x3: [  0.8651,   0.9651] 
+	x4: [  0.9920,   1.0920] 
+	x5: [  0.8075,   0.9075] 
+	x6: [  0.5653,   0.6653] 
+	x7: [  0.7393,   0.8393] 
+	x8: [  0.5886,   0.6886] 
+	x9: [  0.5214,   0.6214] 
+	x10: [  8.0530,   9.0530] 
+	x11: [  6.7566,   7.7566] 
+	x12: [  5.1007,   6.1007] 
+	x13: [  9.5808,  10.5808] 
+	x14: [  6.9411,   7.9411] 
+	x15: [  5.8895,   6.8895] 
+	x16: [  8.0475,   9.0475] 
+	x17: [  7.0081,   8.0081] 
+	x18: [  7.6799,   8.6799] 
+	x19: [  8.5414,   9.5414] 
+	x20: [  2.5727,   3.5727] 
+	x21: [  2.6891,   3.6891] 
+	x22: [  2.2442,   3.2442] 
+	x23: [  2.2230,   3.2230] 
+	x24: [  2.4789,   3.4789] 
+	x25: [  2.6486,   3.6486] 
+	x26: [  2.2764,   3.2764] 
+	x27: [  2.5650,   3.5650] 
+	x28: [  2.6012,   3.6012] 
+	x29: [  2.2156,   3.2156] 
+
+Branching heuristics set to PseudoImpact
+unsat
+Running Marabou with the following arguments:  []
+Time 0.08972740173339844
+Property: ../Benchmarks/marabou_txt/aurora_102_3_1_3.txt
+Number of variables: 130
+Number of lower bounds: 31
+Number of upper bounds: 31
+Number of equations: 99
+Number of non-linear constraints: 1

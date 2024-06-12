@@ -1,0 +1,1774 @@
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: matrix
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: max
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: false
+  eval_adv_example: false
+  show_adv_example: false
+  precompile_jit: false
+  complete_verifier: bab
+  enable_incomplete_verification: false
+  csv_name: null
+  results_file: out.txt
+  root_path: ''
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  no_batchdim_buffers: false
+  save_output: false
+  output_file: out.pkl
+model:
+  name: null
+  path: null
+  onnx_path: ../Benchmarks/onnx/mscn_2048d.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: none
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optmized: false
+  flatten_final_output: false
+  optimize_graph: null
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: ../Benchmarks/vnnlib/mscn_2048d_3.vnnlib
+  vnnlib_path_prefix: ''
+  rhs_offset: null
+solver:
+  batch_size: 50
+  auto_enlarge_batch_size: false
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: forward+backward
+  init_bound_prop_method: same
+  prune_after_crown: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    apply_output_constraints_to: []
+    disable_optimization: []
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    dynamic: false
+    max_dim: 10000
+  multi_class:
+    label_batch_size: 32
+    skip_with_refined_bound: true
+  mip:
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+bab:
+  initial_max_domains: 100000
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 360
+  timeout_scale: 1
+  override_timeout: null
+  get_upper_bound: false
+  dfs_percent: 0.0
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  cut:
+    enabled: false
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+  branching:
+    method: naive
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    sb_coeff_thresh: 0.001
+    nonlinear_split:
+      method: shortcut
+      branching_point_method: uniform
+      num_branches: 2
+      branching_point_refinement: false
+      filter: false
+      filter_beta: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      shortlist_size: 500
+      loose_tanh_threshold: null
+    new_input_split:
+      enable: false
+      batch_size: 2
+      rounds: 1
+      init_alpha_batch_size: 8192
+      full_alpha: false
+    input_split:
+      enable: true
+      enhanced_bound_prop_method: alpha-crown
+      enhanced_branching_method: naive
+      enhanced_bound_patience: 100000000.0
+      attack_patience: 100000000.0
+      adv_check: .inf
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_primary_spec: null
+      sb_primary_spec_iter: 1
+      sb_sum: false
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_zero_crossing_score: false
+      ibp_enhancement: false
+      catch_assertion: false
+      compare_with_old_bounds: false
+      update_rhs_with_attack: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  pgd_order: before
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_loss_mode: null
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  check_clean: false
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_enhanced:
+    pgd_steps: 200
+    pgd_restarts: 500000
+    pgd_alpha: auto
+  input_split_check_adv:
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+
+Experiments at Tue Oct 17 03:46:32 2023 on srg07
+Internal results will be saved to out.txt.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx ../Benchmarks/onnx/mscn_2048d.onnx
+Using vnnlib ../Benchmarks/vnnlib/mscn_2048d_3.vnnlib
+Precompiled vnnlib file found at ../Benchmarks/vnnlib/mscn_2048d_3.vnnlib.compiled
+Loading onnx ../Benchmarks/onnx/mscn_2048d.onnx wih quirks {}
+Attack parameters: initialization=uniform, steps=100, restarts=30, alpha=0.10809598863124847, initialization=uniform, GAMA=False
+Model output of first 5 examples:
+ tensor([[0.83761418]], device='cuda:0')
+Adv example prediction (first 2 examples and 2 restarts):
+ tensor([[[0.85880423],
+         [0.85880423]]], device='cuda:0')
+PGD attack margin (first 2 examles and 10 specs):
+ tensor([[[5.41623235e-02, 9.79900360e-05, 4.79245186e-03, 1.84774399e-04,
+          5.90884089e-02, 4.22796011e-02, 3.57916355e-02, 8.37427378e-03,
+          4.22519445e-03, 8.24183226e-03]]], device='cuda:0')
+number of violation:  0
+Attack finished in 169.8089 seconds.
+PGD attack failed
+Total VNNLIB file length: 2000, max property batch size: 100000, total number of batches: 1
+
+Properties batch 0, size 2000
+Remaining timeout: 187.53894186019897
+##### Instance 0 first 10 spec matrices: 
+tensor([[[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]]], dtype=torch.float64)
+thresholds: tensor([ 0.80464190, -0.85890222,  0.84943706, -0.85441428,  0.66430455,
+        -0.76567256,  0.68760133, -0.73176724,  0.73763627, -0.75010329],
+       device='cuda:0') ######
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=False)
+  (/41): BoundParams(name=/41, inputs=[], perturbed=False)
+  (/42): BoundParams(name=/42, inputs=[], perturbed=False)
+  (/43): BoundParams(name=/43, inputs=[], perturbed=False)
+  (/44): BoundParams(name=/44, inputs=[], perturbed=False)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundConstant(name=/57, value=1)
+  (/58): BoundConstant(name=/58, value=0)
+  (/59): BoundConstant(name=/59, value=0)
+  (/60): BoundConstant(name=/60, value=3)
+  (/61): BoundAdd(name=/61, inputs=[/59, /60], perturbed=False)
+  (/62): BoundUnsqueeze(name=/62, inputs=[/58], perturbed=False)
+  (/63): BoundUnsqueeze(name=/63, inputs=[/61], perturbed=False)
+  (/64): BoundUnsqueeze(name=/64, inputs=[/57], perturbed=False)
+  (/65): BoundSlice(name=/65, inputs=[/0, /62, /63, /64], perturbed=False)
+  (/66): BoundConstant(name=/66, value=2)
+  (/67): BoundConstant(name=/67, value=0)
+  (/68): BoundConstant(name=/68, value=0)
+  (/69): BoundConstant(name=/69, value=7)
+  (/70): BoundAdd(name=/70, inputs=[/68, /69], perturbed=False)
+  (/71): BoundUnsqueeze(name=/71, inputs=[/67], perturbed=False)
+  (/72): BoundUnsqueeze(name=/72, inputs=[/70], perturbed=False)
+  (/73): BoundUnsqueeze(name=/73, inputs=[/66], perturbed=False)
+  (/tensor): BoundSlice(name=/tensor, inputs=[/65, /71, /72, /73], perturbed=False)
+  (/75): BoundSplit(name=/75, inputs=[/tensor], perturbed=False)
+  (/76): BoundSplit(name=/76, inputs=[/tensor], perturbed=False)
+  (/77): BoundConstant(name=/77, value=1)
+  (/78): BoundConstant(name=/78, value=3)
+  (/79): BoundConstant(name=/79, value=3)
+  (/80): BoundConstant(name=/80, value=6)
+  (/81): BoundAdd(name=/81, inputs=[/79, /80], perturbed=False)
+  (/82): BoundUnsqueeze(name=/82, inputs=[/78], perturbed=False)
+  (/83): BoundUnsqueeze(name=/83, inputs=[/81], perturbed=False)
+  (/84): BoundUnsqueeze(name=/84, inputs=[/77], perturbed=False)
+  (/85): BoundSlice(name=/85, inputs=[/0, /82, /83, /84], perturbed=False)
+  (/86): BoundConstant(name=/86, value=2)
+  (/87): BoundConstant(name=/87, value=0)
+  (/88): BoundConstant(name=/88, value=0)
+  (/89): BoundConstant(name=/89, value=14)
+  (/90): BoundAdd(name=/90, inputs=[/88, /89], perturbed=False)
+  (/91): BoundUnsqueeze(name=/91, inputs=[/87], perturbed=False)
+  (/92): BoundUnsqueeze(name=/92, inputs=[/90], perturbed=False)
+  (/93): BoundUnsqueeze(name=/93, inputs=[/86], perturbed=False)
+  (/tensor.3): BoundSlice(name=/tensor.3, inputs=[/85, /91, /92, /93], perturbed=False)
+  (/95): BoundSplit(name=/95, inputs=[/tensor.3], perturbed=False)
+  (/96): BoundSplit(name=/96, inputs=[/tensor.3], perturbed=False)
+  (/97): BoundConstant(name=/97, value=1)
+  (/98): BoundConstant(name=/98, value=9)
+  (/99): BoundConstant(name=/99, value=9)
+  (/100): BoundConstant(name=/100, value=2)
+  (/101): BoundAdd(name=/101, inputs=[/99, /100], perturbed=False)
+  (/102): BoundUnsqueeze(name=/102, inputs=[/98], perturbed=False)
+  (/103): BoundUnsqueeze(name=/103, inputs=[/101], perturbed=False)
+  (/104): BoundUnsqueeze(name=/104, inputs=[/97], perturbed=False)
+  (/105): BoundSlice(name=/105, inputs=[/0, /102, /103, /104], perturbed=False)
+  (/106): BoundConstant(name=/106, value=2)
+  (/107): BoundConstant(name=/107, value=0)
+  (/108): BoundConstant(name=/108, value=0)
+  (/109): BoundConstant(name=/109, value=7)
+  (/110): BoundAdd(name=/110, inputs=[/108, /109], perturbed=False)
+  (/111): BoundUnsqueeze(name=/111, inputs=[/107], perturbed=False)
+  (/112): BoundUnsqueeze(name=/112, inputs=[/110], perturbed=False)
+  (/113): BoundUnsqueeze(name=/113, inputs=[/106], perturbed=False)
+  (/tensor.7): BoundSlice(name=/tensor.7, inputs=[/105, /111, /112, /113], perturbed=False)
+  (/115): BoundSplit(name=/115, inputs=[/tensor.7], perturbed=False)
+  (/116): BoundSplit(name=/116, inputs=[/tensor.7], perturbed=False)
+  (/117): BoundTranspose(name=/117, inputs=[/41], perturbed=False)
+  (/118): BoundMatMul(name=/118, inputs=[/75, /117], perturbed=False)
+  (/input): BoundAdd(name=/input, inputs=[/42, /118], perturbed=False)
+  (/120): BoundRelu(name=/120, inputs=[/input], perturbed=False)
+  (/121): BoundTranspose(name=/121, inputs=[/43], perturbed=False)
+  (/122): BoundMatMul(name=/122, inputs=[/120, /121], perturbed=False)
+  (/input.3): BoundAdd(name=/input.3, inputs=[/44, /122], perturbed=False)
+  (/124): BoundRelu(name=/124, inputs=[/input.3], perturbed=False)
+  (/125): BoundMul(name=/125, inputs=[/124, /76], perturbed=False)
+  (/126): BoundReduceSum(name=/126, inputs=[/125], perturbed=False)
+  (/127): BoundReduceSum(name=/127, inputs=[/76], perturbed=False)
+  (/129): BoundTranspose(name=/129, inputs=[/45], perturbed=False)
+  (/130): BoundMatMul(name=/130, inputs=[/95, /129], perturbed=False)
+  (/input.7): BoundAdd(name=/input.7, inputs=[/46, /130], perturbed=False)
+  (/132): BoundRelu(name=/132, inputs=[/input.7], perturbed=False)
+  (/133): BoundTranspose(name=/133, inputs=[/47], perturbed=False)
+  (/134): BoundMatMul(name=/134, inputs=[/132, /133], perturbed=False)
+  (/input.11): BoundAdd(name=/input.11, inputs=[/48, /134], perturbed=False)
+  (/136): BoundRelu(name=/136, inputs=[/input.11], perturbed=False)
+  (/137): BoundMul(name=/137, inputs=[/136, /96], perturbed=False)
+  (/138): BoundReduceSum(name=/138, inputs=[/137], perturbed=False)
+  (/139): BoundReduceSum(name=/139, inputs=[/96], perturbed=False)
+  (/141): BoundTranspose(name=/141, inputs=[/49], perturbed=False)
+  (/142): BoundMatMul(name=/142, inputs=[/115, /141], perturbed=False)
+  (/input.15): BoundAdd(name=/input.15, inputs=[/50, /142], perturbed=False)
+  (/144): BoundRelu(name=/144, inputs=[/input.15], perturbed=False)
+  (/145): BoundTranspose(name=/145, inputs=[/51], perturbed=False)
+  (/146): BoundMatMul(name=/146, inputs=[/144, /145], perturbed=False)
+  (/input.19): BoundAdd(name=/input.19, inputs=[/52, /146], perturbed=False)
+  (/148): BoundRelu(name=/148, inputs=[/input.19], perturbed=False)
+  (/149): BoundMul(name=/149, inputs=[/148, /116], perturbed=False)
+  (/150): BoundReduceSum(name=/150, inputs=[/149], perturbed=False)
+  (/151): BoundReduceSum(name=/151, inputs=[/116], perturbed=False)
+  (/153): BoundConcat(name=/153, inputs=[/128/mul, /140/mul, /152/mul], perturbed=False)
+  (/input.23): BoundLinear(name=/input.23, inputs=[/153, /53, /54], perturbed=False)
+  (/155): BoundRelu(name=/155, inputs=[/input.23], perturbed=False)
+  (/156): BoundLinear(name=/156, inputs=[/155, /55, /56], perturbed=False)
+  (/157): BoundSigmoid(name=/157, inputs=[/156], perturbed=False)
+  (/128/reciprocal): BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=False)
+  (/128/mul): BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=False)
+  (/140/reciprocal): BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=False)
+  (/140/mul): BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=False)
+  (/152/reciprocal): BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=False)
+  (/152/mul): BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=False)
+)
+Model prediction is: tensor([0.83761424, 0.83761424, 0.85249466,  ..., 0.84299010, 0.62894309,
+        0.62894309], device='cuda:0')
+Split layers:
+  BoundAdd(name=/input, inputs=[/42, /118], perturbed=True): [(BoundRelu(name=/120, inputs=[/input], perturbed=True), 0)]
+  BoundAdd(name=/input.3, inputs=[/44, /122], perturbed=True): [(BoundRelu(name=/124, inputs=[/input.3], perturbed=True), 0)]
+  BoundRelu(name=/124, inputs=[/input.3], perturbed=True): [(BoundMul(name=/125, inputs=[/124, /76], perturbed=True), 0)]
+  BoundSplit(name=/76, inputs=[/tensor], perturbed=True): [(BoundMul(name=/125, inputs=[/124, /76], perturbed=True), 1)]
+  BoundAdd(name=/input.7, inputs=[/46, /130], perturbed=True): [(BoundRelu(name=/132, inputs=[/input.7], perturbed=True), 0)]
+  BoundAdd(name=/input.11, inputs=[/48, /134], perturbed=True): [(BoundRelu(name=/136, inputs=[/input.11], perturbed=True), 0)]
+  BoundRelu(name=/136, inputs=[/input.11], perturbed=True): [(BoundMul(name=/137, inputs=[/136, /96], perturbed=True), 0)]
+  BoundSplit(name=/96, inputs=[/tensor.3], perturbed=True): [(BoundMul(name=/137, inputs=[/136, /96], perturbed=True), 1)]
+  BoundAdd(name=/input.15, inputs=[/50, /142], perturbed=True): [(BoundRelu(name=/144, inputs=[/input.15], perturbed=True), 0)]
+  BoundAdd(name=/input.19, inputs=[/52, /146], perturbed=True): [(BoundRelu(name=/148, inputs=[/input.19], perturbed=True), 0)]
+  BoundRelu(name=/148, inputs=[/input.19], perturbed=True): [(BoundMul(name=/149, inputs=[/148, /116], perturbed=True), 0)]
+  BoundSplit(name=/116, inputs=[/tensor.7], perturbed=True): [(BoundMul(name=/149, inputs=[/148, /116], perturbed=True), 1)]
+  BoundLinear(name=/input.23, inputs=[/153, /53, /54], perturbed=True): [(BoundRelu(name=/155, inputs=[/input.23], perturbed=True), 0)]
+  BoundLinear(name=/156, inputs=[/155, /55, /56], perturbed=True): [(BoundSigmoid(name=/157, inputs=[/156], perturbed=True), 0)]
+  BoundReduceSum(name=/127, inputs=[/76], perturbed=True): [(BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True), 0)]
+  BoundReduceSum(name=/126, inputs=[/125], perturbed=True): [(BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True): [(BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True), 1)]
+  BoundReduceSum(name=/139, inputs=[/96], perturbed=True): [(BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True), 0)]
+  BoundReduceSum(name=/138, inputs=[/137], perturbed=True): [(BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True): [(BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True), 1)]
+  BoundReduceSum(name=/151, inputs=[/116], perturbed=True): [(BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True), 0)]
+  BoundReduceSum(name=/150, inputs=[/149], perturbed=True): [(BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True): [(BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True), 1)]
+Nonlinear functions:
+   BoundRelu(name=/120, inputs=[/input], perturbed=True)
+   BoundRelu(name=/124, inputs=[/input.3], perturbed=True)
+   BoundMul(name=/125, inputs=[/124, /76], perturbed=True)
+   BoundRelu(name=/132, inputs=[/input.7], perturbed=True)
+   BoundRelu(name=/136, inputs=[/input.11], perturbed=True)
+   BoundMul(name=/137, inputs=[/136, /96], perturbed=True)
+   BoundRelu(name=/144, inputs=[/input.15], perturbed=True)
+   BoundRelu(name=/148, inputs=[/input.19], perturbed=True)
+   BoundMul(name=/149, inputs=[/148, /116], perturbed=True)
+   BoundRelu(name=/155, inputs=[/input.23], perturbed=True)
+   BoundSigmoid(name=/157, inputs=[/156], perturbed=True)
+   BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True)
+   BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True)
+   BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True)
+   BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True)
+   BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True)
+   BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True)
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.10092514753341675
+initial forward+backward bounds: tensor([[ 0.55518544],
+        [-1.14761341],
+        [ 0.84876746],
+        ...,
+        [-1.61219621],
+        [ 0.62462187],
+        [-0.63370508]], device='cuda:0')
+Worst class: (+ rhs) -1.8112521171569824
+Iteration 1
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.14664983749389648
+Worst bound: tensor([-0.47994506], device='cuda:0')
+Total time: 0.3261  pickout: 0.0002 decision: 0.0009  bounding: 0.3245 add_domain: 0.0005
+length of domains: 1638
+100 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 2.9169492721557617
+
+Iteration 2
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.09814086556434631
+Worst bound: tensor([-0.30501574], device='cuda:0')
+Total time: 0.0457  pickout: 0.0002 decision: 0.0008  bounding: 0.0442 add_domain: 0.0005
+length of domains: 1634
+200 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 2.962895631790161
+
+Iteration 3
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.056954968720674515
+Worst bound: tensor([-0.04623890], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1613
+300 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.0084686279296875
+
+Iteration 4
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.04951316863298416
+Worst bound: tensor([-0.01553530], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1594
+400 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.0541350841522217
+
+Iteration 5
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.05283289775252342
+Worst bound: tensor([-0.04314268], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0004
+length of domains: 1577
+500 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.099686861038208
+
+Iteration 6
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.05286392197012901
+Worst bound: tensor([-0.02290308], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1559
+600 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.1452126502990723
+
+Iteration 7
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06381911039352417
+Worst bound: tensor([-0.03951705], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1546
+700 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.190880298614502
+
+Iteration 8
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.053982749581336975
+Worst bound: tensor([-0.00855476], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1525
+800 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.2364695072174072
+
+Iteration 9
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06601462513208389
+Worst bound: tensor([-0.08569771], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1511
+900 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.282074451446533
+
+Iteration 10
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07177193462848663
+Worst bound: tensor([-0.12598026], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1493
+1000 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.3307971954345703
+
+Iteration 11
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03313148394227028
+Worst bound: tensor([-0.08278805], device='cuda:0')
+Total time: 0.0522  pickout: 0.0002 decision: 0.0008  bounding: 0.0507 add_domain: 0.0005
+length of domains: 1477
+1100 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.3832459449768066
+
+Iteration 12
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03618864342570305
+Worst bound: tensor([-0.05374807], device='cuda:0')
+Total time: 0.0513  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1463
+1200 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.4347448348999023
+
+Iteration 13
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.039821311831474304
+Worst bound: tensor([-0.03345209], device='cuda:0')
+Total time: 0.0513  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1456
+1300 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.486210584640503
+
+Iteration 14
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.032566554844379425
+Worst bound: tensor([-0.01796913], device='cuda:0')
+Total time: 0.0513  pickout: 0.0002 decision: 0.0008  bounding: 0.0499 add_domain: 0.0005
+length of domains: 1445
+1400 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.5377635955810547
+
+Iteration 15
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.02842581644654274
+Worst bound: tensor([-0.03214246], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 1421
+1500 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.5890536308288574
+
+Iteration 16
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.025404293090105057
+Worst bound: tensor([-0.00874037], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1408
+1600 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.6403863430023193
+
+Iteration 17
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.02619095705449581
+Worst bound: tensor([-0.49181882], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0004
+length of domains: 1391
+1700 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.6918184757232666
+
+Iteration 18
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.030208677053451538
+Worst bound: tensor([-0.12744212], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1378
+1800 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.743222713470459
+
+Iteration 19
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06687889248132706
+Worst bound: tensor([-0.10572958], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1359
+1900 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.788787841796875
+
+Iteration 20
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06078138202428818
+Worst bound: tensor([-0.03615350], device='cuda:0')
+Total time: 0.0456  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 1341
+2000 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.8345835208892822
+
+Iteration 21
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.059779439121484756
+Worst bound: tensor([-0.00931901], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1322
+2100 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.8801393508911133
+
+Iteration 22
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03219609335064888
+Worst bound: tensor([-0.56064755], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1313
+2200 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.9315788745880127
+
+Iteration 23
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.030584082007408142
+Worst bound: tensor([-0.06115478], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 1300
+2300 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 3.98286771774292
+
+Iteration 24
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.030552877113223076
+Worst bound: tensor([-0.08048296], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0004
+length of domains: 1288
+2400 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.03418493270874
+
+Iteration 25
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.02870551124215126
+Worst bound: tensor([-0.60515767], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 1274
+2500 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.085474491119385
+
+Iteration 26
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.029559873044490814
+Worst bound: tensor([-0.07803094], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1255
+2600 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.136815071105957
+
+Iteration 27
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.040021318942308426
+Worst bound: tensor([-0.03238803], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1242
+2700 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.188143730163574
+
+Iteration 28
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.045359354466199875
+Worst bound: tensor([-0.01052916], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0004
+length of domains: 1225
+2800 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.233867406845093
+
+Iteration 29
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06205795332789421
+Worst bound: tensor([-0.12322435], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 1210
+2900 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.279467582702637
+
+Iteration 30
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07621314376592636
+Worst bound: tensor([-0.30803907], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 1196
+3000 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.325197458267212
+
+Iteration 31
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.041152432560920715
+Worst bound: tensor([-0.07409009], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0004
+length of domains: 1183
+3100 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.376628398895264
+
+Iteration 32
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03593887388706207
+Worst bound: tensor([-0.03468764], device='cuda:0')
+Total time: 0.0513  pickout: 0.0002 decision: 0.0008  bounding: 0.0499 add_domain: 0.0005
+length of domains: 1171
+3200 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.428158760070801
+
+Iteration 33
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.035130079835653305
+Worst bound: tensor([-0.03630608], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1150
+3300 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.479490041732788
+
+Iteration 34
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.05324534326791763
+Worst bound: tensor([-0.10274342], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1141
+3400 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.530867576599121
+
+Iteration 35
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.044701363891363144
+Worst bound: tensor([-0.14526111], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1134
+3500 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.582316160202026
+
+Iteration 36
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.037373676896095276
+Worst bound: tensor([-0.04851240], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0004
+length of domains: 1122
+3600 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.633776426315308
+
+Iteration 37
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03944479674100876
+Worst bound: tensor([-0.01571053], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1107
+3700 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.685072898864746
+
+Iteration 38
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03957035019993782
+Worst bound: tensor([-0.33293894], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1091
+3800 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.736523389816284
+
+Iteration 39
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.05009755492210388
+Worst bound: tensor([-0.23904300], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 1077
+3900 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.787926912307739
+
+Iteration 40
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03957727923989296
+Worst bound: tensor([-0.03851438], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1069
+4000 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.839271783828735
+
+Iteration 41
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.02832915633916855
+Worst bound: tensor([-0.01185536], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 1051
+4100 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.890594959259033
+
+Iteration 42
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.054725561290979385
+Worst bound: tensor([-0.04680556], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1033
+4200 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.9362101554870605
+
+Iteration 43
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.059125762432813644
+Worst bound: tensor([-0.03860641], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 1016
+4300 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 4.981881618499756
+
+Iteration 44
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04207873344421387
+Worst bound: tensor([-0.20088720], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 997
+4400 branch and bound domains visited
+Current (lb-rhs): -1.120397686958313
+Cumulative time: 5.033167600631714
+
+Iteration 45
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.06681391596794128
+Worst bound: tensor([-0.35973033], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 989
+4500 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.084497690200806
+
+Iteration 46
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.060186322778463364
+Worst bound: tensor([-0.18924534], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 978
+4600 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.135818719863892
+
+Iteration 47
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.05001072213053703
+Worst bound: tensor([-0.04192317], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 963
+4700 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.18709135055542
+
+Iteration 48
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03857434168457985
+Worst bound: tensor([-0.02316761], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 947
+4800 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.2384421825408936
+
+Iteration 49
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03800041973590851
+Worst bound: tensor([-0.43905103], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 932
+4900 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.289876937866211
+
+Iteration 50
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.036539580672979355
+Worst bound: tensor([-0.04287583], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 919
+5000 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.341251850128174
+
+Iteration 51
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03854873776435852
+Worst bound: tensor([-0.04097813], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0004
+length of domains: 903
+5100 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.3926167488098145
+
+Iteration 52
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08019786328077316
+Worst bound: tensor([-0.04125732], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 888
+5200 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.438378810882568
+
+Iteration 53
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08663509041070938
+Worst bound: tensor([-0.06815416], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 878
+5300 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.483942985534668
+
+Iteration 54
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06913495808839798
+Worst bound: tensor([-0.37995899], device='cuda:0')
+Total time: 0.0460  pickout: 0.0002 decision: 0.0008  bounding: 0.0446 add_domain: 0.0005
+length of domains: 867
+5400 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.530240297317505
+
+Iteration 55
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.05990151688456535
+Worst bound: tensor([-0.09607270], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 845
+5500 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.575996398925781
+
+Iteration 56
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.09610950201749802
+Worst bound: tensor([-0.30416167], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 836
+5600 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.621556997299194
+
+Iteration 57
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07519878447055817
+Worst bound: tensor([-0.04575002], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 816
+5700 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.667075157165527
+
+Iteration 58
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08132369816303253
+Worst bound: tensor([-0.56623209], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0004
+length of domains: 803
+5800 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.712631940841675
+
+Iteration 59
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08630569279193878
+Worst bound: tensor([-0.04302275], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0004
+length of domains: 784
+5900 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.758235931396484
+
+Iteration 60
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.05053317919373512
+Worst bound: tensor([-0.22950178], device='cuda:0')
+Total time: 0.0529  pickout: 0.0002 decision: 0.0009  bounding: 0.0513 add_domain: 0.0006
+length of domains: 779
+6000 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.8113932609558105
+
+Iteration 61
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03694835677742958
+Worst bound: tensor([-0.04186422], device='cuda:0')
+Total time: 0.0515  pickout: 0.0003 decision: 0.0008  bounding: 0.0499 add_domain: 0.0005
+length of domains: 758
+6100 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.8632025718688965
+
+Iteration 62
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07329388707876205
+Worst bound: tensor([-0.02444285], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 744
+6200 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.908864259719849
+
+Iteration 63
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.029528068378567696
+Worst bound: tensor([-0.17496574], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 729
+6300 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 5.960243463516235
+
+Iteration 64
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03439414128661156
+Worst bound: tensor([-0.29659206], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 711
+6400 branch and bound domains visited
+Current (lb-rhs): -1.0319797992706299
+Cumulative time: 6.011520624160767
+
+Iteration 65
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04595091566443443
+Worst bound: tensor([-0.31170583], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 698
+6500 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.06284236907959
+
+Iteration 66
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.040405530482530594
+Worst bound: tensor([-0.05877018], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 685
+6600 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.1141908168792725
+
+Iteration 67
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03320141136646271
+Worst bound: tensor([-0.04904640], device='cuda:0')
+Total time: 0.0510  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 674
+6700 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.1654253005981445
+
+Iteration 68
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.031090034171938896
+Worst bound: tensor([-0.07053655], device='cuda:0')
+Total time: 0.0510  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 653
+6800 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.216670036315918
+
+Iteration 69
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.032098427414894104
+Worst bound: tensor([-0.05931169], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 643
+6900 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.268011093139648
+
+Iteration 70
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06546956300735474
+Worst bound: tensor([-0.01442701], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 635
+7000 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.313517093658447
+
+Iteration 71
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.05307106301188469
+Worst bound: tensor([-0.03087378], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 616
+7100 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.359109401702881
+
+Iteration 72
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.09545131772756577
+Worst bound: tensor([-0.75793248], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 604
+7200 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.404840469360352
+
+Iteration 73
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08570940047502518
+Worst bound: tensor([-0.06670707], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0005
+length of domains: 587
+7300 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.450360059738159
+
+Iteration 74
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07286427170038223
+Worst bound: tensor([-0.08577609], device='cuda:0')
+Total time: 0.0454  pickout: 0.0002 decision: 0.0008  bounding: 0.0440 add_domain: 0.0005
+length of domains: 572
+7400 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.495968818664551
+
+Iteration 75
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04056686908006668
+Worst bound: tensor([-0.34790742], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 563
+7500 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.547395706176758
+
+Iteration 76
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.048902325332164764
+Worst bound: tensor([-0.38017988], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 549
+7600 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.598857402801514
+
+Iteration 77
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.06460702419281006
+Worst bound: tensor([-0.20811221], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 545
+7700 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.650319337844849
+
+Iteration 78
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.059553276747465134
+Worst bound: tensor([-0.12237024], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 530
+7800 branch and bound domains visited
+Current (lb-rhs): -0.9486843943595886
+Cumulative time: 6.701705694198608
+
+Iteration 79
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.06605316698551178
+Worst bound: tensor([-0.32976383], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 529
+7900 branch and bound domains visited
+Current (lb-rhs): -0.7454624772071838
+Cumulative time: 6.753040313720703
+
+Iteration 80
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.047657936811447144
+Worst bound: tensor([-0.07102805], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0004
+length of domains: 507
+8000 branch and bound domains visited
+Current (lb-rhs): -0.7454624772071838
+Cumulative time: 6.804412603378296
+
+Iteration 81
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.039291538298130035
+Worst bound: tensor([-0.64827579], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 492
+8100 branch and bound domains visited
+Current (lb-rhs): -0.7454624772071838
+Cumulative time: 6.855777740478516
+
+Iteration 82
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04058728739619255
+Worst bound: tensor([-0.40361381], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 481
+8200 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 6.907216310501099
+
+Iteration 83
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.0341428741812706
+Worst bound: tensor([-0.07418984], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 463
+8300 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 6.958590745925903
+
+Iteration 84
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03382595255970955
+Worst bound: tensor([-0.47206068], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 452
+8400 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 7.0099427700042725
+
+Iteration 85
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04783983528614044
+Worst bound: tensor([-0.11732769], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 431
+8500 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 7.061289310455322
+
+Iteration 86
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.05588807538151741
+Worst bound: tensor([-0.07293725], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 429
+8600 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 7.112652778625488
+
+Iteration 87
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04601820930838585
+Worst bound: tensor([-0.06791329], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 410
+8700 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 7.164056777954102
+
+Iteration 88
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03895902261137962
+Worst bound: tensor([-0.09715044], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 394
+8800 branch and bound domains visited
+Current (lb-rhs): -0.663280725479126
+Cumulative time: 7.215351343154907
+
+Iteration 89
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.0451856330037117
+Worst bound: tensor([-0.56168807], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 378
+8900 branch and bound domains visited
+Current (lb-rhs): -0.6423138380050659
+Cumulative time: 7.2667396068573
+
+Iteration 90
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04595952108502388
+Worst bound: tensor([-0.11608270], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 361
+9000 branch and bound domains visited
+Current (lb-rhs): -0.6423138380050659
+Cumulative time: 7.318190813064575
+
+Iteration 91
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04370870441198349
+Worst bound: tensor([-0.07949179], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 354
+9100 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.36955189704895
+
+Iteration 92
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.028631193563342094
+Worst bound: tensor([-0.01466072], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 338
+9200 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.4209887981414795
+
+Iteration 93
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03359090909361839
+Worst bound: tensor([-0.16468549], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 324
+9300 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.472323656082153
+
+Iteration 94
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.034848760813474655
+Worst bound: tensor([-0.05747473], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 314
+9400 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.523710250854492
+
+Iteration 95
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.030119989067316055
+Worst bound: tensor([-0.05483884], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 294
+9500 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.57502818107605
+
+Iteration 96
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04342292621731758
+Worst bound: tensor([-0.48539072], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 284
+9600 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.626452922821045
+
+Iteration 97
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.0301278755068779
+Worst bound: tensor([-0.02043718], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0004
+length of domains: 269
+9700 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.677762269973755
+
+Iteration 98
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.026397261768579483
+Worst bound: tensor([-0.03259057], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0496 add_domain: 0.0005
+length of domains: 252
+9800 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.729018688201904
+
+Iteration 99
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03294427692890167
+Worst bound: tensor([-0.10363790], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 241
+9900 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.780428647994995
+
+Iteration 100
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.029742002487182617
+Worst bound: tensor([-0.03015518], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 221
+10000 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.831784009933472
+
+Iteration 101
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.09373760223388672
+Worst bound: tensor([-0.28741163], device='cuda:0')
+Total time: 0.0453  pickout: 0.0002 decision: 0.0008  bounding: 0.0439 add_domain: 0.0004
+length of domains: 208
+10100 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.87733006477356
+
+Iteration 102
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03724001348018646
+Worst bound: tensor([-0.03855550], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 188
+10200 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.928716421127319
+
+Iteration 103
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04298301041126251
+Worst bound: tensor([-0.04934251], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 179
+10300 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 7.9801552295684814
+
+Iteration 104
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.036473050713539124
+Worst bound: tensor([-0.03137237], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0004
+length of domains: 166
+10400 branch and bound domains visited
+Current (lb-rhs): -0.5106322169303894
+Cumulative time: 8.031477212905884
+
+Iteration 105
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03977922722697258
+Worst bound: tensor([-0.25831419], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 153
+10500 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.082775592803955
+
+Iteration 106
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.031504660844802856
+Worst bound: tensor([-0.06331748], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 133
+10600 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.134160280227661
+
+Iteration 107
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.028422340750694275
+Worst bound: tensor([-0.03550833], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 116
+10700 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.18547773361206
+
+Iteration 108
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.0421966016292572
+Worst bound: tensor([-0.11352161], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 107
+10800 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.236803770065308
+
+Iteration 109
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.044101815670728683
+Worst bound: tensor([-0.05538177], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 92
+10900 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.288155794143677
+
+Iteration 110
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04977254197001457
+Worst bound: tensor([-0.03049994], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0005
+length of domains: 81
+11000 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.339508533477783
+
+Iteration 111
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03008868917822838
+Worst bound: tensor([-0.01853383], device='cuda:0')
+Total time: 0.0512  pickout: 0.0002 decision: 0.0008  bounding: 0.0498 add_domain: 0.0005
+length of domains: 64
+11100 branch and bound domains visited
+Current (lb-rhs): -0.3881470561027527
+Cumulative time: 8.3909273147583
+
+Iteration 112
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03988920897245407
+Worst bound: tensor([-0.03744268], device='cuda:0')
+Total time: 0.0511  pickout: 0.0002 decision: 0.0008  bounding: 0.0497 add_domain: 0.0004
+length of domains: 42
+11200 branch and bound domains visited
+Current (lb-rhs): -0.28871119022369385
+Cumulative time: 8.442244291305542
+
+Iteration 113
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04223565757274628
+Worst bound: tensor([-0.02683383], device='cuda:0')
+Total time: 0.0478  pickout: 0.0002 decision: 0.0008  bounding: 0.0464 add_domain: 0.0005
+length of domains: 31
+11284 branch and bound domains visited
+Current (lb-rhs): -0.026833832263946533
+Cumulative time: 8.490293025970459
+
+Iteration 114
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.02820046991109848
+Worst bound: tensor([-0.00368190], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0008  bounding: 0.0441 add_domain: 0.0005
+length of domains: 21
+11346 branch and bound domains visited
+Current (lb-rhs): -0.0036818981170654297
+Cumulative time: 8.536036491394043
+
+Iteration 115
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.023014917969703674
+Worst bound: tensor([-0.00088418], device='cuda:0')
+Total time: 0.0428  pickout: 0.0002 decision: 0.0008  bounding: 0.0414 add_domain: 0.0005
+length of domains: 7
+11388 branch and bound domains visited
+Current (lb-rhs): -0.0008841753005981445
+Cumulative time: 8.579082727432251
+
+Iteration 116
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.015859629958868027
+Worst bound: tensor([-0.00024939], device='cuda:0')
+Total time: 0.0391  pickout: 0.0002 decision: 0.0008  bounding: 0.0377 add_domain: 0.0004
+length of domains: 6
+11402 branch and bound domains visited
+Current (lb-rhs): -0.0002493858337402344
+Cumulative time: 8.618402242660522
+
+Iteration 117
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.011747129261493683
+Worst bound: tensor([-1.44243240e-05], device='cuda:0')
+Total time: 0.0389  pickout: 0.0002 decision: 0.0008  bounding: 0.0375 add_domain: 0.0004
+length of domains: 2
+11414 branch and bound domains visited
+Current (lb-rhs): -1.4424324035644531e-05
+Cumulative time: 8.65753722190857
+
+Iteration 118
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.006795942783355713
+Worst bound: tensor([1.06096268e-05], device='cuda:0')
+Total time: 0.0386  pickout: 0.0002 decision: 0.0008  bounding: 0.0374 add_domain: 0.0002
+length of domains: 0
+11418 branch and bound domains visited
+No domains left, verification finished!
+The lower bound of last batch is -0.7646730542182922
+Cumulative time: 8.69627833366394
+
+Result: unsat
+Time: 181.97933435440063

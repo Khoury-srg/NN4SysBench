@@ -1,0 +1,1832 @@
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: matrix
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: max
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: false
+  eval_adv_example: false
+  show_adv_example: false
+  precompile_jit: false
+  complete_verifier: bab
+  enable_incomplete_verification: false
+  csv_name: null
+  results_file: out.txt
+  root_path: ''
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  no_batchdim_buffers: false
+  save_output: false
+  output_file: out.pkl
+model:
+  name: null
+  path: null
+  onnx_path: ../Benchmarks/onnx/mscn_128d.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: none
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optmized: false
+  flatten_final_output: false
+  optimize_graph: null
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: ../Benchmarks/vnnlib/mscn_128d_1.vnnlib
+  vnnlib_path_prefix: ''
+  rhs_offset: null
+solver:
+  batch_size: 50
+  auto_enlarge_batch_size: false
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: forward+backward
+  init_bound_prop_method: same
+  prune_after_crown: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    apply_output_constraints_to: []
+    disable_optimization: []
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    dynamic: false
+    max_dim: 10000
+  multi_class:
+    label_batch_size: 32
+    skip_with_refined_bound: true
+  mip:
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+bab:
+  initial_max_domains: 100000
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 360
+  timeout_scale: 1
+  override_timeout: null
+  get_upper_bound: false
+  dfs_percent: 0.0
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  cut:
+    enabled: false
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+  branching:
+    method: naive
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    sb_coeff_thresh: 0.001
+    nonlinear_split:
+      method: shortcut
+      branching_point_method: uniform
+      num_branches: 2
+      branching_point_refinement: false
+      filter: false
+      filter_beta: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      shortlist_size: 500
+      loose_tanh_threshold: null
+    new_input_split:
+      enable: false
+      batch_size: 2
+      rounds: 1
+      init_alpha_batch_size: 8192
+      full_alpha: false
+    input_split:
+      enable: true
+      enhanced_bound_prop_method: alpha-crown
+      enhanced_branching_method: naive
+      enhanced_bound_patience: 100000000.0
+      attack_patience: 100000000.0
+      adv_check: .inf
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_primary_spec: null
+      sb_primary_spec_iter: 1
+      sb_sum: false
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_zero_crossing_score: false
+      ibp_enhancement: false
+      catch_assertion: false
+      compare_with_old_bounds: false
+      update_rhs_with_attack: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  pgd_order: before
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_loss_mode: null
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  check_clean: false
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_enhanced:
+    pgd_steps: 200
+    pgd_restarts: 500000
+    pgd_alpha: auto
+  input_split_check_adv:
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+
+Experiments at Tue Oct 17 03:38:50 2023 on srg07
+Internal results will be saved to out.txt.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx ../Benchmarks/onnx/mscn_128d.onnx
+Using vnnlib ../Benchmarks/vnnlib/mscn_128d_1.vnnlib
+Precompiled vnnlib file found at ../Benchmarks/vnnlib/mscn_128d_1.vnnlib.compiled
+Loading onnx ../Benchmarks/onnx/mscn_128d.onnx wih quirks {}
+Attack parameters: initialization=uniform, steps=100, restarts=30, alpha=0.1041666641831398, initialization=uniform, GAMA=False
+Model output of first 5 examples:
+ tensor([[0.69601554]], device='cuda:0')
+Adv example prediction (first 2 examples and 2 restarts):
+ tensor([[[0.71262693],
+         [0.71262693]]], device='cuda:0')
+PGD attack margin (first 2 examles and 10 specs):
+ tensor([[[0.07728463, 0.01778859, 0.00133622, 0.02374643, 0.01736331,
+          0.05948150, 0.00011104, 0.05404675, 0.06527281, 0.01805967]]],
+       device='cuda:0')
+number of violation:  0
+Attack finished in 2.8070 seconds.
+PGD attack failed
+Total VNNLIB file length: 1000, max property batch size: 100000, total number of batches: 1
+
+Properties batch 0, size 1000
+Remaining timeout: 355.5986740589142
+##### Instance 0 first 10 spec matrices: 
+tensor([[[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]],
+
+        [[ 1.]],
+
+        [[-1.]]], dtype=torch.float64)
+thresholds: tensor([ 0.63534230, -0.73041552,  0.73944759, -0.76453024,  0.69036216,
+        -0.76720697,  0.71151477, -0.76567256,  0.64124948, -0.72458196],
+       device='cuda:0') ######
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=False)
+  (/41): BoundParams(name=/41, inputs=[], perturbed=False)
+  (/42): BoundParams(name=/42, inputs=[], perturbed=False)
+  (/43): BoundParams(name=/43, inputs=[], perturbed=False)
+  (/44): BoundParams(name=/44, inputs=[], perturbed=False)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundConstant(name=/57, value=1)
+  (/58): BoundConstant(name=/58, value=0)
+  (/59): BoundConstant(name=/59, value=0)
+  (/60): BoundConstant(name=/60, value=3)
+  (/61): BoundAdd(name=/61, inputs=[/59, /60], perturbed=False)
+  (/62): BoundUnsqueeze(name=/62, inputs=[/58], perturbed=False)
+  (/63): BoundUnsqueeze(name=/63, inputs=[/61], perturbed=False)
+  (/64): BoundUnsqueeze(name=/64, inputs=[/57], perturbed=False)
+  (/65): BoundSlice(name=/65, inputs=[/0, /62, /63, /64], perturbed=False)
+  (/66): BoundConstant(name=/66, value=2)
+  (/67): BoundConstant(name=/67, value=0)
+  (/68): BoundConstant(name=/68, value=0)
+  (/69): BoundConstant(name=/69, value=7)
+  (/70): BoundAdd(name=/70, inputs=[/68, /69], perturbed=False)
+  (/71): BoundUnsqueeze(name=/71, inputs=[/67], perturbed=False)
+  (/72): BoundUnsqueeze(name=/72, inputs=[/70], perturbed=False)
+  (/73): BoundUnsqueeze(name=/73, inputs=[/66], perturbed=False)
+  (/tensor): BoundSlice(name=/tensor, inputs=[/65, /71, /72, /73], perturbed=False)
+  (/75): BoundSplit(name=/75, inputs=[/tensor], perturbed=False)
+  (/76): BoundSplit(name=/76, inputs=[/tensor], perturbed=False)
+  (/77): BoundConstant(name=/77, value=1)
+  (/78): BoundConstant(name=/78, value=3)
+  (/79): BoundConstant(name=/79, value=3)
+  (/80): BoundConstant(name=/80, value=6)
+  (/81): BoundAdd(name=/81, inputs=[/79, /80], perturbed=False)
+  (/82): BoundUnsqueeze(name=/82, inputs=[/78], perturbed=False)
+  (/83): BoundUnsqueeze(name=/83, inputs=[/81], perturbed=False)
+  (/84): BoundUnsqueeze(name=/84, inputs=[/77], perturbed=False)
+  (/85): BoundSlice(name=/85, inputs=[/0, /82, /83, /84], perturbed=False)
+  (/86): BoundConstant(name=/86, value=2)
+  (/87): BoundConstant(name=/87, value=0)
+  (/88): BoundConstant(name=/88, value=0)
+  (/89): BoundConstant(name=/89, value=14)
+  (/90): BoundAdd(name=/90, inputs=[/88, /89], perturbed=False)
+  (/91): BoundUnsqueeze(name=/91, inputs=[/87], perturbed=False)
+  (/92): BoundUnsqueeze(name=/92, inputs=[/90], perturbed=False)
+  (/93): BoundUnsqueeze(name=/93, inputs=[/86], perturbed=False)
+  (/tensor.3): BoundSlice(name=/tensor.3, inputs=[/85, /91, /92, /93], perturbed=False)
+  (/95): BoundSplit(name=/95, inputs=[/tensor.3], perturbed=False)
+  (/96): BoundSplit(name=/96, inputs=[/tensor.3], perturbed=False)
+  (/97): BoundConstant(name=/97, value=1)
+  (/98): BoundConstant(name=/98, value=9)
+  (/99): BoundConstant(name=/99, value=9)
+  (/100): BoundConstant(name=/100, value=2)
+  (/101): BoundAdd(name=/101, inputs=[/99, /100], perturbed=False)
+  (/102): BoundUnsqueeze(name=/102, inputs=[/98], perturbed=False)
+  (/103): BoundUnsqueeze(name=/103, inputs=[/101], perturbed=False)
+  (/104): BoundUnsqueeze(name=/104, inputs=[/97], perturbed=False)
+  (/105): BoundSlice(name=/105, inputs=[/0, /102, /103, /104], perturbed=False)
+  (/106): BoundConstant(name=/106, value=2)
+  (/107): BoundConstant(name=/107, value=0)
+  (/108): BoundConstant(name=/108, value=0)
+  (/109): BoundConstant(name=/109, value=7)
+  (/110): BoundAdd(name=/110, inputs=[/108, /109], perturbed=False)
+  (/111): BoundUnsqueeze(name=/111, inputs=[/107], perturbed=False)
+  (/112): BoundUnsqueeze(name=/112, inputs=[/110], perturbed=False)
+  (/113): BoundUnsqueeze(name=/113, inputs=[/106], perturbed=False)
+  (/tensor.7): BoundSlice(name=/tensor.7, inputs=[/105, /111, /112, /113], perturbed=False)
+  (/115): BoundSplit(name=/115, inputs=[/tensor.7], perturbed=False)
+  (/116): BoundSplit(name=/116, inputs=[/tensor.7], perturbed=False)
+  (/117): BoundTranspose(name=/117, inputs=[/41], perturbed=False)
+  (/118): BoundMatMul(name=/118, inputs=[/75, /117], perturbed=False)
+  (/input): BoundAdd(name=/input, inputs=[/42, /118], perturbed=False)
+  (/120): BoundRelu(name=/120, inputs=[/input], perturbed=False)
+  (/121): BoundTranspose(name=/121, inputs=[/43], perturbed=False)
+  (/122): BoundMatMul(name=/122, inputs=[/120, /121], perturbed=False)
+  (/input.3): BoundAdd(name=/input.3, inputs=[/44, /122], perturbed=False)
+  (/124): BoundRelu(name=/124, inputs=[/input.3], perturbed=False)
+  (/125): BoundMul(name=/125, inputs=[/124, /76], perturbed=False)
+  (/126): BoundReduceSum(name=/126, inputs=[/125], perturbed=False)
+  (/127): BoundReduceSum(name=/127, inputs=[/76], perturbed=False)
+  (/129): BoundTranspose(name=/129, inputs=[/45], perturbed=False)
+  (/130): BoundMatMul(name=/130, inputs=[/95, /129], perturbed=False)
+  (/input.7): BoundAdd(name=/input.7, inputs=[/46, /130], perturbed=False)
+  (/132): BoundRelu(name=/132, inputs=[/input.7], perturbed=False)
+  (/133): BoundTranspose(name=/133, inputs=[/47], perturbed=False)
+  (/134): BoundMatMul(name=/134, inputs=[/132, /133], perturbed=False)
+  (/input.11): BoundAdd(name=/input.11, inputs=[/48, /134], perturbed=False)
+  (/136): BoundRelu(name=/136, inputs=[/input.11], perturbed=False)
+  (/137): BoundMul(name=/137, inputs=[/136, /96], perturbed=False)
+  (/138): BoundReduceSum(name=/138, inputs=[/137], perturbed=False)
+  (/139): BoundReduceSum(name=/139, inputs=[/96], perturbed=False)
+  (/141): BoundTranspose(name=/141, inputs=[/49], perturbed=False)
+  (/142): BoundMatMul(name=/142, inputs=[/115, /141], perturbed=False)
+  (/input.15): BoundAdd(name=/input.15, inputs=[/50, /142], perturbed=False)
+  (/144): BoundRelu(name=/144, inputs=[/input.15], perturbed=False)
+  (/145): BoundTranspose(name=/145, inputs=[/51], perturbed=False)
+  (/146): BoundMatMul(name=/146, inputs=[/144, /145], perturbed=False)
+  (/input.19): BoundAdd(name=/input.19, inputs=[/52, /146], perturbed=False)
+  (/148): BoundRelu(name=/148, inputs=[/input.19], perturbed=False)
+  (/149): BoundMul(name=/149, inputs=[/148, /116], perturbed=False)
+  (/150): BoundReduceSum(name=/150, inputs=[/149], perturbed=False)
+  (/151): BoundReduceSum(name=/151, inputs=[/116], perturbed=False)
+  (/153): BoundConcat(name=/153, inputs=[/128/mul, /140/mul, /152/mul], perturbed=False)
+  (/input.23): BoundLinear(name=/input.23, inputs=[/153, /53, /54], perturbed=False)
+  (/155): BoundRelu(name=/155, inputs=[/input.23], perturbed=False)
+  (/156): BoundLinear(name=/156, inputs=[/155, /55, /56], perturbed=False)
+  (/157): BoundSigmoid(name=/157, inputs=[/156], perturbed=False)
+  (/128/reciprocal): BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=False)
+  (/128/mul): BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=False)
+  (/140/reciprocal): BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=False)
+  (/140/mul): BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=False)
+  (/152/reciprocal): BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=False)
+  (/152/mul): BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=False)
+)
+Model prediction is: tensor([0.69601554, 0.69601554, 0.74886346, 0.74886346, 0.71607792, 0.71607792,
+        0.72939479, 0.72939479, 0.69316411, 0.69316411, 0.72336650, 0.72336650,
+        0.69948560, 0.69948560, 0.72268194, 0.72268194, 0.69872504, 0.69872504,
+        0.70802945, 0.70802945, 0.69716763, 0.69716763, 0.73170751, 0.73170751,
+        0.70699847, 0.70699847, 0.70738363, 0.70738363, 0.70398766, 0.70398766,
+        0.73804539, 0.73804539, 0.73485219, 0.73485219, 0.72030234, 0.72030234,
+        0.74607927, 0.74607927, 0.71426141, 0.71426141, 0.73374271, 0.73374271,
+        0.74913549, 0.74913549, 0.71100277, 0.71100277, 0.71540391, 0.71540391,
+        0.71757394, 0.71757394, 0.73146302, 0.73146302, 0.70044482, 0.70044482,
+        0.72501433, 0.72501433, 0.70446992, 0.70446992, 0.63757020, 0.63757020,
+        0.74176437, 0.74176437, 0.70170122, 0.70170122, 0.73386329, 0.73386329,
+        0.71182364, 0.71182364, 0.70243615, 0.70243615, 0.70455617, 0.70455617,
+        0.69844317, 0.69844317, 0.73493147, 0.73493147, 0.65738034, 0.65738034,
+        0.74284208, 0.74284208, 0.61109596, 0.61109596, 0.73381454, 0.73381454,
+        0.74349010, 0.74349010, 0.68548018, 0.68548018, 0.71317208, 0.71317208,
+        0.69906384, 0.69906384, 0.73252964, 0.73252964, 0.72172385, 0.72172385,
+        0.66163689, 0.66163689, 0.74984896, 0.74984896, 0.70681536, 0.70681536,
+        0.70932740, 0.70932740, 0.71391743, 0.71391743, 0.74368644, 0.74368644,
+        0.68261921, 0.68261921, 0.70619291, 0.70619291, 0.70561016, 0.70561016,
+        0.68499714, 0.68499714, 0.74832356, 0.74832356, 0.73129582, 0.73129582,
+        0.70506072, 0.70506072, 0.72494924, 0.72494924, 0.72038007, 0.72038007,
+        0.74806273, 0.74806273, 0.69664973, 0.69664973, 0.64137107, 0.64137107,
+        0.74320441, 0.74320441, 0.71672815, 0.71672815, 0.70519012, 0.70519012,
+        0.71366256, 0.71366256, 0.70526350, 0.70526350, 0.72115159, 0.72115159,
+        0.73203653, 0.73203653, 0.71759635, 0.71759635, 0.70847172, 0.70847172,
+        0.70647287, 0.70647287, 0.77587390, 0.77587390, 0.70428699, 0.70428699,
+        0.70052630, 0.70052630, 0.74880427, 0.74880427, 0.81933683, 0.81933683,
+        0.73519486, 0.73519486, 0.68359357, 0.68359357, 0.72861469, 0.72861469,
+        0.71977812, 0.71977812, 0.74694955, 0.74694955, 0.74954432, 0.74954432,
+        0.71628582, 0.71628582, 0.61624026, 0.61624026, 0.70382613, 0.70382613,
+        0.70703071, 0.70703071, 0.63875604, 0.63875604, 0.64206260, 0.64206260,
+        0.72472227, 0.72472227, 0.72546959, 0.72546959, 0.74343914, 0.74343914,
+        0.74404043, 0.74404043, 0.69257545, 0.69257545, 0.71257818, 0.71257818,
+        0.70852977, 0.70852977, 0.74580824, 0.74580824, 0.72777689, 0.72777689,
+        0.68390048, 0.68390048, 0.70499331, 0.70499331, 0.71670943, 0.71670943,
+        0.64101821, 0.64101821, 0.70491993, 0.70491993, 0.74512088, 0.74512088,
+        0.73309833, 0.73309833, 0.68537021, 0.68537021, 0.72881436, 0.72881436,
+        0.71419382, 0.71419382, 0.74169582, 0.74169582, 0.72568876, 0.72568876,
+        0.71714336, 0.71714336, 0.74289823, 0.74289823, 0.73223084, 0.73223084,
+        0.74512845, 0.74512845, 0.74038172, 0.74038172, 0.68943137, 0.68943137,
+        0.70898426, 0.70898426, 0.73275352, 0.73275352, 0.64243174, 0.64243174,
+        0.73605049, 0.73605049, 0.68375182, 0.68375182, 0.72866565, 0.72866565,
+        0.71335369, 0.71335369, 0.71547681, 0.71547681, 0.70845675, 0.70845675,
+        0.69215029, 0.69215029, 0.64798075, 0.64798075, 0.72875124, 0.72875124,
+        0.70545697, 0.70545697, 0.58983427, 0.58983427, 0.73420423, 0.73420423,
+        0.68616766, 0.68616766, 0.70490557, 0.70490557, 0.70059347, 0.70059347,
+        0.70845830, 0.70845830, 0.70513469, 0.70513469, 0.70823008, 0.70823008,
+        0.64097774, 0.64097774, 0.71060944, 0.71060944, 0.73321849, 0.73321849,
+        0.71924049, 0.71924049, 0.68317622, 0.68317622, 0.73601735, 0.73601735,
+        0.70517570, 0.70517570, 0.71350574, 0.71350574, 0.72763067, 0.72763067,
+        0.71111572, 0.71111572, 0.74264026, 0.74264026, 0.72365284, 0.72365284,
+        0.71313518, 0.71313518, 0.70267510, 0.70267510, 0.72405750, 0.72405750,
+        0.65597486, 0.65597486, 0.59717757, 0.59717757, 0.62671632, 0.62671632,
+        0.73037046, 0.73037046, 0.72690594, 0.72690594, 0.72838223, 0.72838223,
+        0.68361753, 0.68361753, 0.71694750, 0.71694750, 0.71090972, 0.71090972,
+        0.75368387, 0.75368387, 0.71650040, 0.71650040, 0.40779281, 0.40779281,
+        0.64841920, 0.64841920, 0.72955549, 0.72955549, 0.68219155, 0.68219155,
+        0.58639622, 0.58639622, 0.70989192, 0.70989192, 0.74876171, 0.74876171,
+        0.71064490, 0.71064490, 0.71112567, 0.71112567, 0.71969026, 0.71969026,
+        0.72605711, 0.72605711, 0.69937694, 0.69937694, 0.74627173, 0.74627173,
+        0.74469668, 0.74469668, 0.70426738, 0.70426738, 0.70115620, 0.70115620,
+        0.58305287, 0.58305287, 0.73804802, 0.73804802, 0.81844419, 0.81844419,
+        0.71266270, 0.71266270, 0.73304325, 0.73304325, 0.63900864, 0.63900864,
+        0.72777510, 0.72777510, 0.70599359, 0.70599359, 0.70828700, 0.70828700,
+        0.70318884, 0.70318884, 0.68665671, 0.68665671, 0.64281440, 0.64281440,
+        0.71064049, 0.71064049, 0.59269470, 0.59269470, 0.70825678, 0.70825678,
+        0.68418801, 0.68418801, 0.74608952, 0.74608952, 0.69358289, 0.69358289,
+        0.70599490, 0.70599490, 0.72846377, 0.72846377, 0.64275277, 0.64275277,
+        0.71704233, 0.71704233, 0.71986312, 0.71986312, 0.71057820, 0.71057820,
+        0.74488723, 0.74488723, 0.70539343, 0.70539343, 0.74131501, 0.74131501,
+        0.73839611, 0.73839611, 0.68864799, 0.68864799, 0.68930006, 0.68930006,
+        0.64468181, 0.64468181, 0.63436675, 0.63436675, 0.70472467, 0.70472467,
+        0.64700085, 0.64700085, 0.74433303, 0.74433303, 0.70561373, 0.70561373,
+        0.71453899, 0.71453899, 0.74124640, 0.74124640, 0.70269388, 0.70269388,
+        0.70493233, 0.70493233, 0.80280674, 0.80280674, 0.70506382, 0.70506382,
+        0.64552855, 0.64552855, 0.73369139, 0.73369139, 0.69052714, 0.69052714,
+        0.73090369, 0.73090369, 0.63858914, 0.63858914, 0.70968330, 0.70968330,
+        0.76526970, 0.76526970, 0.64359963, 0.64359963, 0.73157275, 0.73157275,
+        0.82847971, 0.82847971, 0.69743097, 0.69743097, 0.58825952, 0.58825952,
+        0.64689559, 0.64689559, 0.70452023, 0.70452023, 0.59243381, 0.59243381,
+        0.73794556, 0.73794556, 0.69784606, 0.69784606, 0.74923009, 0.74923009,
+        0.64196426, 0.64196426, 0.69480062, 0.69480062, 0.71265346, 0.71265346,
+        0.71793222, 0.71793222, 0.64112270, 0.64112270, 0.69311291, 0.69311291,
+        0.72297162, 0.72297162, 0.70745534, 0.70745534, 0.71880352, 0.71880352,
+        0.71433657, 0.71433657, 0.73202652, 0.73202652, 0.73817092, 0.73817092,
+        0.71390367, 0.71390367, 0.70761937, 0.70761937, 0.70343292, 0.70343292,
+        0.60949534, 0.60949534, 0.72810674, 0.72810674, 0.61199850, 0.61199850,
+        0.73792505, 0.73792505, 0.71173471, 0.71173471, 0.63935709, 0.63935709,
+        0.71553797, 0.71553797, 0.73443747, 0.73443747, 0.73055720, 0.73055720,
+        0.73741066, 0.73741066, 0.71579194, 0.71579194, 0.70561016, 0.70561016,
+        0.70094812, 0.70094812, 0.68366551, 0.68366551, 0.69460094, 0.69460094,
+        0.68742442, 0.68742442, 0.72046071, 0.72046071, 0.73549139, 0.73549139,
+        0.71509075, 0.71509075, 0.79194206, 0.79194206, 0.68979216, 0.68979216,
+        0.73921400, 0.73921400, 0.71166438, 0.71166438, 0.73884106, 0.73884106,
+        0.76084346, 0.76084346, 0.64341670, 0.64341670, 0.71736097, 0.71736097,
+        0.74328870, 0.74328870, 0.51199502, 0.51199502, 0.74895573, 0.74895573,
+        0.69926184, 0.69926184, 0.70486754, 0.70486754, 0.71024823, 0.71024823,
+        0.71380079, 0.71380079, 0.73051459, 0.73051459, 0.80788285, 0.80788285,
+        0.70527703, 0.70527703, 0.74151814, 0.74151814, 0.74523765, 0.74523765,
+        0.74540764, 0.74540764, 0.71761882, 0.71761882, 0.71334738, 0.71334738,
+        0.63800031, 0.63800031, 0.58104604, 0.58104604, 0.73248237, 0.73248237,
+        0.72861469, 0.72861469, 0.71661752, 0.71661752, 0.71948993, 0.71948993,
+        0.72830266, 0.72830266, 0.74856752, 0.74856752, 0.71936393, 0.71936393,
+        0.71041155, 0.71041155, 0.73779702, 0.73779702, 0.68719614, 0.68719614,
+        0.65732014, 0.65732014, 0.72086078, 0.72086078, 0.64582783, 0.64582783,
+        0.73502100, 0.73502100, 0.74800825, 0.74800825, 0.63885599, 0.63885599,
+        0.64118463, 0.64118463, 0.58047020, 0.58047020, 0.68334889, 0.68334889,
+        0.70735228, 0.70735228, 0.76307285, 0.76307285, 0.73803270, 0.73803270,
+        0.72845763, 0.72845763, 0.72845358, 0.72845358, 0.70915991, 0.70915991,
+        0.72974265, 0.72974265, 0.68856353, 0.68856353, 0.72505337, 0.72505337,
+        0.60974604, 0.60974604, 0.74307185, 0.74307185, 0.71862698, 0.71862698,
+        0.73425812, 0.73425812, 0.73058569, 0.73058569, 0.63947183, 0.63947183,
+        0.68739122, 0.68739122, 0.81471628, 0.81471628, 0.74991268, 0.74991268,
+        0.64234048, 0.64234048, 0.72352821, 0.72352821, 0.72796589, 0.72796589,
+        0.74551928, 0.74551928, 0.70265138, 0.70265138, 0.69132185, 0.69132185,
+        0.71984732, 0.71984732, 0.65089375, 0.65089375, 0.64860010, 0.64860010,
+        0.58811975, 0.58811975, 0.72898352, 0.72898352, 0.71373320, 0.71373320,
+        0.76298875, 0.76298875, 0.61103362, 0.61103362, 0.73174739, 0.73174739,
+        0.71404845, 0.71404845, 0.64372838, 0.64372838, 0.70340508, 0.70340508,
+        0.64090908, 0.64090908, 0.71385914, 0.71385914, 0.68551838, 0.68551838,
+        0.69803119, 0.69803119, 0.70889950, 0.70889950, 0.72299546, 0.72299546,
+        0.72198290, 0.72198290, 0.73264658, 0.73264658, 0.64769274, 0.64769274,
+        0.71306139, 0.71306139, 0.70241636, 0.70241636, 0.72228497, 0.72228497,
+        0.73113853, 0.73113853, 0.59215093, 0.59215093, 0.73561907, 0.73561907,
+        0.68902344, 0.68902344, 0.74608433, 0.74608433, 0.59136546, 0.59136546,
+        0.57542485, 0.57542485, 0.70903736, 0.70903736, 0.68290740, 0.68290740,
+        0.69288927, 0.69288927, 0.72509062, 0.72509062, 0.70270580, 0.70270580,
+        0.71278119, 0.71278119, 0.74382657, 0.74382657, 0.73510540, 0.73510540,
+        0.71586537, 0.71586537, 0.74773300, 0.74773300, 0.70429927, 0.70429927,
+        0.74604130, 0.74604130, 0.58684760, 0.58684760, 0.70793909, 0.70793909,
+        0.74924898, 0.74924898, 0.74153090, 0.74153090, 0.71931255, 0.71931255,
+        0.64187199, 0.64187199, 0.73253465, 0.73253465, 0.71162587, 0.71162587,
+        0.73601222, 0.73601222, 0.71979541, 0.71979541, 0.69977713, 0.69977713,
+        0.64488900, 0.64488900, 0.72256595, 0.72256595, 0.73516428, 0.73516428,
+        0.70005471, 0.70005471, 0.73123085, 0.73123085, 0.70093435, 0.70093435,
+        0.71964127, 0.71964127, 0.74515891, 0.74515891, 0.70678711, 0.70678711,
+        0.71635091, 0.71635091, 0.74235147, 0.74235147, 0.69292367, 0.69292367,
+        0.61563861, 0.61563861, 0.73541474, 0.73541474, 0.70569986, 0.70569986,
+        0.70652783, 0.70652783, 0.74928677, 0.74928677, 0.73847795, 0.73847795,
+        0.72566801, 0.72566801, 0.71787500, 0.71787500, 0.72814757, 0.72814757,
+        0.74312282, 0.74312282, 0.70858753, 0.70858753, 0.70603263, 0.70603263,
+        0.73498517, 0.73498517, 0.73066068, 0.73066068, 0.73439646, 0.73439646,
+        0.55504853, 0.55504853, 0.73718679, 0.73718679, 0.72349560, 0.72349560,
+        0.63902688, 0.63902688, 0.74426436, 0.74426436, 0.72085780, 0.72085780,
+        0.73220098, 0.73220098, 0.72451007, 0.72451007, 0.70708346, 0.70708346,
+        0.68453288, 0.68453288, 0.82626277, 0.82626277, 0.70523530, 0.70523530,
+        0.73201913, 0.73201913, 0.70429623, 0.70429623, 0.74448061, 0.74448061,
+        0.71973056, 0.71973056, 0.68400592, 0.68400592, 0.74461788, 0.74461788,
+        0.62131494, 0.62131494, 0.74078381, 0.74078381, 0.69776809, 0.69776809,
+        0.69866323, 0.69866323, 0.74352837, 0.74352837, 0.73151040, 0.73151040,
+        0.72595435, 0.72595435, 0.70805109, 0.70805109, 0.70647144, 0.70647144,
+        0.70609456, 0.70609456, 0.70716858, 0.70716858, 0.69927269, 0.69927269,
+        0.73117846, 0.73117846, 0.70433086, 0.70433086, 0.71834910, 0.71834910,
+        0.61550128, 0.61550128, 0.72390932, 0.72390932, 0.81279576, 0.81279576,
+        0.70996588, 0.70996588, 0.72863710, 0.72863710, 0.72670633, 0.72670633,
+        0.73281825, 0.73281825, 0.62458038, 0.62458038, 0.69703287, 0.69703287,
+        0.70623326, 0.70623326, 0.72072053, 0.72072053, 0.64749384, 0.64749384,
+        0.74710357, 0.74710357, 0.73126829, 0.73126829, 0.73592550, 0.73592550,
+        0.69659889, 0.69659889, 0.73611677, 0.73611677, 0.69204628, 0.69204628,
+        0.69737387, 0.69737387, 0.71574765, 0.71574765, 0.71327400, 0.71327400,
+        0.76086855, 0.76086855, 0.74775201, 0.74775201, 0.74317390, 0.74317390,
+        0.75637329, 0.75637329, 0.72915870, 0.72915870, 0.70540166, 0.70540166,
+        0.74623632, 0.74623632, 0.71851951, 0.71851951, 0.73751748, 0.73751748,
+        0.71832031, 0.71832031, 0.68922037, 0.68922037, 0.70459682, 0.70459682,
+        0.64096230, 0.64096230, 0.72989106, 0.72989106, 0.73109102, 0.73109102,
+        0.61830926, 0.61830926, 0.70331347, 0.70331347, 0.73535866, 0.73535866,
+        0.64723438, 0.64723438, 0.70720333, 0.70720333], device='cuda:0')
+Split layers:
+  BoundAdd(name=/input, inputs=[/42, /118], perturbed=True): [(BoundRelu(name=/120, inputs=[/input], perturbed=True), 0)]
+  BoundAdd(name=/input.3, inputs=[/44, /122], perturbed=True): [(BoundRelu(name=/124, inputs=[/input.3], perturbed=True), 0)]
+  BoundRelu(name=/124, inputs=[/input.3], perturbed=True): [(BoundMul(name=/125, inputs=[/124, /76], perturbed=True), 0)]
+  BoundSplit(name=/76, inputs=[/tensor], perturbed=True): [(BoundMul(name=/125, inputs=[/124, /76], perturbed=True), 1)]
+  BoundAdd(name=/input.7, inputs=[/46, /130], perturbed=True): [(BoundRelu(name=/132, inputs=[/input.7], perturbed=True), 0)]
+  BoundAdd(name=/input.11, inputs=[/48, /134], perturbed=True): [(BoundRelu(name=/136, inputs=[/input.11], perturbed=True), 0)]
+  BoundRelu(name=/136, inputs=[/input.11], perturbed=True): [(BoundMul(name=/137, inputs=[/136, /96], perturbed=True), 0)]
+  BoundSplit(name=/96, inputs=[/tensor.3], perturbed=True): [(BoundMul(name=/137, inputs=[/136, /96], perturbed=True), 1)]
+  BoundAdd(name=/input.15, inputs=[/50, /142], perturbed=True): [(BoundRelu(name=/144, inputs=[/input.15], perturbed=True), 0)]
+  BoundAdd(name=/input.19, inputs=[/52, /146], perturbed=True): [(BoundRelu(name=/148, inputs=[/input.19], perturbed=True), 0)]
+  BoundRelu(name=/148, inputs=[/input.19], perturbed=True): [(BoundMul(name=/149, inputs=[/148, /116], perturbed=True), 0)]
+  BoundSplit(name=/116, inputs=[/tensor.7], perturbed=True): [(BoundMul(name=/149, inputs=[/148, /116], perturbed=True), 1)]
+  BoundLinear(name=/input.23, inputs=[/153, /53, /54], perturbed=True): [(BoundRelu(name=/155, inputs=[/input.23], perturbed=True), 0)]
+  BoundLinear(name=/156, inputs=[/155, /55, /56], perturbed=True): [(BoundSigmoid(name=/157, inputs=[/156], perturbed=True), 0)]
+  BoundReduceSum(name=/127, inputs=[/76], perturbed=True): [(BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True), 0)]
+  BoundReduceSum(name=/126, inputs=[/125], perturbed=True): [(BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True): [(BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True), 1)]
+  BoundReduceSum(name=/139, inputs=[/96], perturbed=True): [(BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True), 0)]
+  BoundReduceSum(name=/138, inputs=[/137], perturbed=True): [(BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True): [(BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True), 1)]
+  BoundReduceSum(name=/151, inputs=[/116], perturbed=True): [(BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True), 0)]
+  BoundReduceSum(name=/150, inputs=[/149], perturbed=True): [(BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True), 0)]
+  BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True): [(BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True), 1)]
+Nonlinear functions:
+   BoundRelu(name=/120, inputs=[/input], perturbed=True)
+   BoundRelu(name=/124, inputs=[/input.3], perturbed=True)
+   BoundMul(name=/125, inputs=[/124, /76], perturbed=True)
+   BoundRelu(name=/132, inputs=[/input.7], perturbed=True)
+   BoundRelu(name=/136, inputs=[/input.11], perturbed=True)
+   BoundMul(name=/137, inputs=[/136, /96], perturbed=True)
+   BoundRelu(name=/144, inputs=[/input.15], perturbed=True)
+   BoundRelu(name=/148, inputs=[/input.19], perturbed=True)
+   BoundMul(name=/149, inputs=[/148, /116], perturbed=True)
+   BoundRelu(name=/155, inputs=[/input.23], perturbed=True)
+   BoundSigmoid(name=/157, inputs=[/156], perturbed=True)
+   BoundReciprocal(name=/128/reciprocal, inputs=[/127], perturbed=True)
+   BoundMul(name=/128/mul, inputs=[/126, /128/reciprocal], perturbed=True)
+   BoundReciprocal(name=/140/reciprocal, inputs=[/139], perturbed=True)
+   BoundMul(name=/140/mul, inputs=[/138, /140/reciprocal], perturbed=True)
+   BoundReciprocal(name=/152/reciprocal, inputs=[/151], perturbed=True)
+   BoundMul(name=/152/mul, inputs=[/150, /152/reciprocal], perturbed=True)
+Using Linf sparse perturbation. Perturbed dimensions: 3.
+Avg perturbation: 0.04200945422053337
+initial forward+backward bounds: tensor([[ 0.67864299],
+        [-0.71300679],
+        [ 0.74076599],
+        [-0.75693452],
+        [ 0.68162405],
+        [-0.76377708],
+        [ 0.70375699],
+        [-0.75908840],
+        [ 0.67931938],
+        [-0.70673335],
+        [ 0.72214961],
+        [-0.72462064],
+        [ 0.67766291],
+        [-0.73091048],
+        [ 0.70182025],
+        [-0.75312978],
+        [ 0.67202634],
+        [-0.74115425],
+        [ 0.66615117],
+        [-0.77100945],
+        [ 0.67207128],
+        [-0.73112732],
+        [ 0.70939636],
+        [-0.75748485],
+        [ 0.67305934],
+        [-0.75960773],
+        [ 0.68271065],
+        [-0.73121005],
+        [ 0.67170125],
+        [-0.75743687],
+        [ 0.71869713],
+        [-0.75721437],
+        [ 0.71092331],
+        [-0.75822926],
+        [ 0.69035143],
+        [-0.76166189],
+        [ 0.73972899],
+        [-0.75238973],
+        [ 0.70414847],
+        [-0.72504151],
+        [ 0.71707797],
+        [-0.74984735],
+        [ 0.74135709],
+        [-0.75692797],
+        [ 0.67062420],
+        [-0.77005678],
+        [ 0.67989880],
+        [-0.74925631],
+        [ 0.71151417],
+        [-0.72321385],
+        [ 0.71607685],
+        [-0.74958485],
+        [ 0.68117702],
+        [-0.72836703],
+        [ 0.70734578],
+        [-0.74929023],
+        [ 0.66991854],
+        [-0.76084787],
+        [ 0.61767465],
+        [-0.65755033],
+        [ 0.72607458],
+        [-0.75779718],
+        [ 0.66098267],
+        [-0.77392620],
+        [ 0.71156102],
+        [-0.75603360],
+        [ 0.67931962],
+        [-0.74293196],
+        [ 0.66857868],
+        [-0.75612324],
+        [ 0.66240144],
+        [-0.77078700],
+        [ 0.57244122],
+        [-0.82093704],
+        [ 0.71874785],
+        [-0.75067246],
+        [ 0.63443869],
+        [-0.68112743],
+        [ 0.73972940],
+        [-0.74594223],
+        [ 0.56416655],
+        [-0.65586281],
+        [ 0.71156144],
+        [-0.75592649],
+        [ 0.73984259],
+        [-0.74712080],
+        [ 0.67921305],
+        [-0.69171387],
+        [ 0.68235785],
+        [-0.75817466],
+        [ 0.67989880],
+        [-0.71780068],
+        [ 0.70831156],
+        [-0.75620651],
+        [ 0.70182687],
+        [-0.74958748],
+        [ 0.54755908],
+        [-0.69817317],
+        [ 0.74360436],
+        [-0.75619560],
+        [ 0.67030567],
+        [-0.76423728],
+        [ 0.67699826],
+        [-0.75642937],
+        [ 0.70414877],
+        [-0.72425932],
+        [ 0.73691267],
+        [-0.75040054],
+        [ 0.67931974],
+        [-0.68590999],
+        [ 0.66518742],
+        [-0.77123415],
+        [ 0.66523653],
+        [-0.76785177],
+        [ 0.67989898],
+        [-0.69007331],
+        [ 0.73972064],
+        [-0.75681692],
+        [ 0.71232712],
+        [-0.75328815],
+        [ 0.66544533],
+        [-0.76379842],
+        [ 0.70734626],
+        [-0.74909860],
+        [ 0.69437099],
+        [-0.75590700],
+        [ 0.73973137],
+        [-0.75623465],
+        [ 0.67931950],
+        [-0.71360701],
+        [ 0.51140290],
+        [-0.85711145],
+        [ 0.73502481],
+        [-0.75129712],
+        [ 0.70387483],
+        [-0.73250204],
+        [ 0.66527396],
+        [-0.76500350],
+        [ 0.68556231],
+        [-0.75431389],
+        [ 0.67989886],
+        [-0.72969818],
+        [ 0.71869940],
+        [-0.72359723],
+        [ 0.71128625],
+        [-0.75612688],
+        [ 0.70569915],
+        [-0.73029923],
+        [ 0.68083423],
+        [-0.73506939],
+        [ 0.67931944],
+        [-0.73259252],
+        [ 0.74877620],
+        [-0.80163234],
+        [ 0.66571575],
+        [-0.76912653],
+        [ 0.68229717],
+        [-0.71838379],
+        [ 0.74076605],
+        [-0.75680500],
+        [ 0.80129898],
+        [-0.83550113],
+        [ 0.71393287],
+        [-0.75595492],
+        [ 0.68271047],
+        [-0.68447596],
+        [ 0.72700316],
+        [-0.73022312],
+        [ 0.68941998],
+        [-0.76091236],
+        [ 0.74121964],
+        [-0.75267851],
+        [ 0.74294567],
+        [-0.75620157],
+        [ 0.68437099],
+        [-0.76013130],
+        [ 0.55873072],
+        [-0.67261434],
+        [ 0.67196470],
+        [-0.75571966],
+        [ 0.67169082],
+        [-0.76257581],
+        [ 0.52362913],
+        [-0.84429121],
+        [ 0.59804529],
+        [-0.70252472],
+        [ 0.70734870],
+        [-0.74842978],
+        [ 0.72115999],
+        [-0.72995579],
+        [ 0.73973966],
+        [-0.74712110],
+        [ 0.74077320],
+        [-0.74729419],
+        [ 0.66381705],
+        [-0.73132730],
+        [ 0.68083429],
+        [-0.74299818],
+        [ 0.68095976],
+        [-0.73506612],
+        [ 0.74121970],
+        [-0.75036931],
+        [ 0.70284700],
+        [-0.75860929],
+        [ 0.67921317],
+        [-0.68856925],
+        [ 0.67931950],
+        [-0.72971171],
+        [ 0.70928514],
+        [-0.72468710],
+        [ 0.53320336],
+        [-0.85036337],
+        [ 0.68973476],
+        [-0.72472900],
+        [ 0.73502374],
+        [-0.75538540],
+        [ 0.70704901],
+        [-0.75866508],
+        [ 0.67989886],
+        [-0.69081616],
+        [ 0.71034402],
+        [-0.75011027],
+        [ 0.68289626],
+        [-0.76167399],
+        [ 0.72571903],
+        [-0.75802767],
+        [ 0.70402277],
+        [-0.75085610],
+        [ 0.71061975],
+        [-0.72418851],
+        [ 0.73984259],
+        [-0.74594176],
+        [ 0.71825802],
+        [-0.74622053],
+        [ 0.73984247],
+        [-0.75037789],
+        [ 0.72572196],
+        [-0.75514448],
+        [ 0.67857528],
+        [-0.70006806],
+        [ 0.66913909],
+        [-0.76998395],
+        [ 0.71919042],
+        [-0.74630702],
+        [ 0.51463902],
+        [-0.86843419],
+        [ 0.71259850],
+        [-0.75917786],
+        [ 0.68083429],
+        [-0.68666220],
+        [ 0.70482028],
+        [-0.75866002],
+        [ 0.67931974],
+        [-0.74586600],
+        [ 0.68257105],
+        [-0.76181632],
+        [ 0.66916621],
+        [-0.76740390],
+        [ 0.61691201],
+        [-0.71357310],
+        [ 0.63594335],
+        [-0.69515401],
+        [ 0.72727722],
+        [-0.73022270],
+        [ 0.67857522],
+        [-0.73130798],
+        [ 0.41696119],
+        [-0.73082417],
+        [ 0.71223480],
+        [-0.75549471],
+        [ 0.67921323],
+        [-0.69306898],
+        [ 0.66735762],
+        [-0.76264364],
+        [ 0.68117595],
+        [-0.72907192],
+        [ 0.68095952],
+        [-0.73492736],
+        [ 0.66527891],
+        [-0.76462501],
+        [ 0.68083435],
+        [-0.73460078],
+        [ 0.63518071],
+        [-0.64581710],
+        [ 0.67921340],
+        [-0.74069363],
+        [ 0.70821875],
+        [-0.75770700],
+        [ 0.71480078],
+        [-0.72361213],
+        [ 0.68095952],
+        [-0.68538874],
+        [ 0.72584015],
+        [-0.74616134],
+        [ 0.66686124],
+        [-0.76171362],
+        [ 0.67647427],
+        [-0.77056634],
+        [ 0.71212357],
+        [-0.74698704],
+        [ 0.67924696],
+        [-0.75955033],
+        [ 0.73566061],
+        [-0.74955702],
+        [ 0.72214979],
+        [-0.72534764],
+        [ 0.68087637],
+        [-0.76077616],
+        [ 0.68365252],
+        [-0.72675198],
+        [ 0.70127648],
+        [-0.75706464],
+        [ 0.56929404],
+        [-0.74220318],
+        [ 0.55574095],
+        [-0.63223684],
+        [ 0.61769044],
+        [-0.63568479],
+        [ 0.70567966],
+        [-0.75958562],
+        [ 0.70617443],
+        [-0.75182182],
+        [ 0.71114725],
+        [-0.75010562],
+        [ 0.67864293],
+        [-0.68857139],
+        [ 0.68528771],
+        [-0.75975269],
+        [ 0.67062932],
+        [-0.76960403],
+        [ 0.72558111],
+        [-0.77935797],
+        [ 0.68229717],
+        [-0.74918008],
+        [ 0.36781883],
+        [-0.44600260],
+        [ 0.63409847],
+        [-0.68308055],
+        [ 0.71168798],
+        [-0.75056356],
+        [ 0.67989874],
+        [-0.68447977],
+        [ 0.57256776],
+        [-0.59695071],
+        [ 0.67921329],
+        [-0.73931122],
+        [ 0.74135751],
+        [-0.75610787],
+        [ 0.67681342],
+        [-0.76214933],
+        [ 0.67857522],
+        [-0.74227083],
+        [ 0.68894434],
+        [-0.76301783],
+        [ 0.72236532],
+        [-0.72983932],
+        [ 0.68271065],
+        [-0.71572691],
+        [ 0.73984230],
+        [-0.75268912],
+        [ 0.73691237],
+        [-0.75241518],
+        [ 0.66571784],
+        [-0.76899171],
+        [ 0.68117112],
+        [-0.73204577],
+        [ 0.56374854],
+        [-0.60128778],
+        [ 0.71854776],
+        [-0.75736994],
+        [ 0.76338685],
+        [-0.86159557],
+        [ 0.68264538],
+        [-0.75537157],
+        [ 0.71933234],
+        [-0.74676853],
+        [ 0.52330488],
+        [-0.84939802],
+        [ 0.70187044],
+        [-0.75981957],
+        [ 0.66520452],
+        [-0.77011013],
+        [ 0.66613519],
+        [-0.77227139],
+        [ 0.68508488],
+        [-0.72539169],
+        [ 0.61703485],
+        [-0.70081842],
+        [ 0.64046121],
+        [-0.64571840],
+        [ 0.68083447],
+        [-0.73926610],
+        [ 0.55075341],
+        [-0.63731778],
+        [ 0.67258966],
+        [-0.76000953],
+        [ 0.68247032],
+        [-0.68590307],
+        [ 0.73691171],
+        [-0.75546700],
+        [ 0.67989886],
+        [-0.70700234],
+        [ 0.67174631],
+        [-0.75684792],
+        [ 0.71169531],
+        [-0.74779510],
+        [ 0.62217289],
+        [-0.66054237],
+        [ 0.69295895],
+        [-0.74937439],
+        [ 0.71651220],
+        [-0.72318721],
+        [ 0.68095952],
+        [-0.73903060],
+        [ 0.73972923],
+        [-0.75001025],
+        [ 0.69090629],
+        [-0.72469807],
+        [ 0.72572005],
+        [-0.75719219],
+        [ 0.71869498],
+        [-0.75798255],
+        [ 0.67864293],
+        [-0.69844985],
+        [ 0.68247026],
+        [-0.69601905],
+        [ 0.61980951],
+        [-0.68981951],
+        [ 0.53373903],
+        [-0.78244615],
+        [ 0.66243082],
+        [-0.77185363],
+        [ 0.63868862],
+        [-0.66706300],
+        [ 0.73199493],
+        [-0.75691605],
+        [ 0.68882340],
+        [-0.72744411],
+        [ 0.68721539],
+        [-0.75506109],
+        [ 0.72572011],
+        [-0.75704157],
+        [ 0.66859579],
+        [-0.75789124],
+        [ 0.68502760],
+        [-0.73381668],
+        [ 0.79304868],
+        [-0.81162035],
+        [ 0.68973303],
+        [-0.72523278],
+        [ 0.63781703],
+        [-0.65742117],
+        [ 0.70821244],
+        [-0.75875938],
+        [ 0.68083429],
+        [-0.70004827],
+        [ 0.71506166],
+        [-0.74961144],
+        [ 0.52806950],
+        [-0.84102941],
+        [ 0.67395979],
+        [-0.76423311],
+        [ 0.66019106],
+        [-0.81788731],
+        [ 0.59747189],
+        [-0.70649332],
+        [ 0.70827800],
+        [-0.75842506],
+        [ 0.81739545],
+        [-0.83847499],
+        [ 0.67864287],
+        [-0.71579152],
+        [ 0.55052471],
+        [-0.62769878],
+        [ 0.63525158],
+        [-0.68063796],
+        [ 0.67158502],
+        [-0.75739610],
+        [ 0.56328571],
+        [-0.61975497],
+        [ 0.71745610],
+        [-0.75824314],
+        [ 0.66119903],
+        [-0.76610053],
+        [ 0.74135697],
+        [-0.75713533],
+        [ 0.51064157],
+        [-0.86909246],
+        [ 0.68271059],
+        [-0.70669466],
+        [ 0.68264562],
+        [-0.75532973],
+        [ 0.67931956],
+        [-0.75457633],
+        [ 0.53716201],
+        [-0.84236795],
+        [ 0.67921329],
+        [-0.70673490],
+        [ 0.72276819],
+        [-0.72317511],
+        [ 0.67864281],
+        [-0.73512632],
+        [ 0.69416893],
+        [-0.75315535],
+        [ 0.68259960],
+        [-0.76284987],
+        [ 0.70936614],
+        [-0.75824010],
+        [ 0.71819097],
+        [-0.75799733],
+        [ 0.69781435],
+        [-0.73332953],
+        [ 0.67261636],
+        [-0.75670111],
+        [ 0.66768110],
+        [-0.76320195],
+        [ 0.56175578],
+        [-0.65326828],
+        [ 0.71376181],
+        [-0.74637061],
+        [ 0.54590702],
+        [-0.67555004],
+        [ 0.71854872],
+        [-0.75710052],
+        [ 0.67989886],
+        [-0.74223143],
+        [ 0.51800865],
+        [-0.85632169],
+        [ 0.68105286],
+        [-0.76257151],
+        [ 0.71223271],
+        [-0.75600827],
+        [ 0.71313465],
+        [-0.75156420],
+        [ 0.71888435],
+        [-0.75581211],
+        [ 0.68718934],
+        [-0.75524777],
+        [ 0.68882334],
+        [-0.72743028],
+        [ 0.68117326],
+        [-0.73077744],
+        [ 0.67921323],
+        [-0.68810135],
+        [ 0.68229735],
+        [-0.70669907],
+        [ 0.67864281],
+        [-0.69612736],
+        [ 0.69436991],
+        [-0.75623500],
+        [ 0.71839398],
+        [-0.75211388],
+        [ 0.67921329],
+        [-0.74927872],
+        [ 0.75751513],
+        [-0.82292247],
+        [ 0.67931956],
+        [-0.70006138],
+        [ 0.72572464],
+        [-0.75257796],
+        [ 0.69893634],
+        [-0.72609693],
+        [ 0.71866328],
+        [-0.75898504],
+        [ 0.66061670],
+        [-0.80877304],
+        [ 0.64182836],
+        [-0.64488631],
+        [ 0.71061951],
+        [-0.72467554],
+        [ 0.74006397],
+        [-0.74650025],
+        [ 0.43177649],
+        [-0.57522392],
+        [ 0.74294591],
+        [-0.75490862],
+        [ 0.68247020],
+        [-0.71573055],
+        [ 0.66025227],
+        [-0.77293211],
+        [ 0.69507235],
+        [-0.72722995],
+        [ 0.68234026],
+        [-0.76098114],
+        [ 0.71672630],
+        [-0.74748385],
+        [ 0.78271115],
+        [-0.82991749],
+        [ 0.67989886],
+        [-0.72972465],
+        [ 0.73572069],
+        [-0.74732196],
+        [ 0.74006379],
+        [-0.75037640],
+        [ 0.73309964],
+        [-0.75807703],
+        [ 0.69292390],
+        [-0.75023758],
+        [ 0.67648101],
+        [-0.76985627],
+        [ 0.54413491],
+        [-0.76790076],
+        [ 0.55077326],
+        [-0.61135834],
+        [ 0.71303362],
+        [-0.75175089],
+        [ 0.70482081],
+        [-0.75851780],
+        [ 0.67893726],
+        [-0.73859972],
+        [ 0.68894982],
+        [-0.76217520],
+        [ 0.70398247],
+        [-0.75869858],
+        [ 0.73973060],
+        [-0.75734085],
+        [ 0.68247032],
+        [-0.75446886],
+        [ 0.67232037],
+        [-0.76974392],
+        [ 0.71755105],
+        [-0.75801462],
+        [ 0.67857528],
+        [-0.69574082],
+        [ 0.63443917],
+        [-0.68098772],
+        [ 0.71707422],
+        [-0.72463483],
+        [ 0.63838136],
+        [-0.65733117],
+        [ 0.71222717],
+        [-0.75729340],
+        [ 0.73972124],
+        [-0.75612563],
+        [ 0.53939295],
+        [-0.79931509],
+        [ 0.51162440],
+        [-0.85337573],
+        [ 0.57595265],
+        [-0.58498102],
+        [ 0.67857522],
+        [-0.68810368],
+        [ 0.67857516],
+        [-0.73498911],
+        [ 0.75522691],
+        [-0.77011436],
+        [ 0.71684992],
+        [-0.75904012],
+        [ 0.70398015],
+        [-0.75913125],
+        [ 0.70615447],
+        [-0.75640506],
+        [ 0.68247026],
+        [-0.73488957],
+        [ 0.71214861],
+        [-0.75054991],
+        [ 0.68095952],
+        [-0.69602865],
+        [ 0.70560771],
+        [-0.75176078],
+        [ 0.56174654],
+        [-0.65395474],
+        [ 0.73566055],
+        [-0.75041199],
+        [ 0.69290447],
+        [-0.75442028],
+        [ 0.71767277],
+        [-0.75032473],
+        [ 0.71672606],
+        [-0.74766445],
+        [ 0.51784402],
+        [-0.85863215],
+        [ 0.67857498],
+        [-0.69612789],
+        [ 0.77013296],
+        [-0.85481292],
+        [ 0.74360424],
+        [-0.75633562],
+        [ 0.64071238],
+        [-0.64403409],
+        [ 0.72189069],
+        [-0.72535944],
+        [ 0.70284337],
+        [-0.75918537],
+        [ 0.73973942],
+        [-0.75125480],
+        [ 0.66855711],
+        [-0.75768661],
+        [ 0.68247020],
+        [-0.70003504],
+        [ 0.68941838],
+        [-0.76120448],
+        [ 0.51630527],
+        [-0.75087047],
+        [ 0.62956989],
+        [-0.70143974],
+        [ 0.55076545],
+        [-0.62709886],
+        [ 0.71314418],
+        [-0.74757445],
+        [ 0.68234223],
+        [-0.76068038],
+        [ 0.75497133],
+        [-0.77011991],
+        [ 0.54598796],
+        [-0.67195183],
+        [ 0.70936954],
+        [-0.75760496],
+        [ 0.68083441],
+        [-0.74581939],
+        [ 0.64182830],
+        [-0.64551109],
+        [ 0.66658878],
+        [-0.76558876],
+        [ 0.53333139],
+        [-0.84817040],
+        [ 0.68555778],
+        [-0.75519955],
+        [ 0.68247038],
+        [-0.68855870],
+        [ 0.67989862],
+        [-0.71577078],
+        [ 0.68773413],
+        [-0.73399061],
+        [ 0.72214961],
+        [-0.72384042],
+        [ 0.71937066],
+        [-0.72462654],
+        [ 0.71325082],
+        [-0.75174832],
+        [ 0.63855505],
+        [-0.67850548],
+        [ 0.67649305],
+        [-0.76856887],
+        [ 0.66858059],
+        [-0.75597954],
+        [ 0.71997797],
+        [-0.72462469],
+        [ 0.70940292],
+        [-0.75619370],
+        [ 0.57086813],
+        [-0.61295468],
+        [ 0.71222121],
+        [-0.75861210],
+        [ 0.68229711],
+        [-0.69563770],
+        [ 0.73502332],
+        [-0.75748992],
+        [ 0.55934447],
+        [-0.61984867],
+        [ 0.46247441],
+        [-0.69062150],
+        [ 0.69376487],
+        [-0.72538042],
+        [ 0.67989874],
+        [-0.68590826],
+        [ 0.67989886],
+        [-0.70563143],
+        [ 0.70444500],
+        [-0.75343728],
+        [ 0.66748035],
+        [-0.76064330],
+        [ 0.68293434],
+        [-0.75535423],
+        [ 0.69036448],
+        [-0.77855873],
+        [ 0.71839577],
+        [-0.75134438],
+        [ 0.68163025],
+        [-0.76292825],
+        [ 0.74076736],
+        [-0.75445437],
+        [ 0.67857510],
+        [-0.72905284],
+        [ 0.73691201],
+        [-0.75536180],
+        [ 0.56348658],
+        [-0.60497248],
+        [ 0.68247032],
+        [-0.73251623],
+        [ 0.74121308],
+        [-0.75732327],
+        [ 0.72571939],
+        [-0.75766587],
+        [ 0.71387964],
+        [-0.72465193],
+        [ 0.51076758],
+        [-0.86719167],
+        [ 0.70472395],
+        [-0.75954413],
+        [ 0.68092161],
+        [-0.75395578],
+        [ 0.71889079],
+        [-0.75272298],
+        [ 0.69437891],
+        [-0.75349104],
+        [ 0.66566050],
+        [-0.76672184],
+        [ 0.63844639],
+        [-0.65190220],
+        [ 0.70390701],
+        [-0.74949962],
+        [ 0.71766829],
+        [-0.75213182],
+        [ 0.66003990],
+        [-0.77524734],
+        [ 0.70828247],
+        [-0.75764781],
+        [ 0.66322470],
+        [-0.76866114],
+        [ 0.69146854],
+        [-0.75888258],
+        [ 0.74077320],
+        [-0.74951953],
+        [ 0.68083423],
+        [-0.73179573],
+        [ 0.68095958],
+        [-0.75010329],
+        [ 0.72798657],
+        [-0.75687343],
+        [ 0.66374868],
+        [-0.73198789],
+        [ 0.55876046],
+        [-0.67045885],
+        [ 0.71756446],
+        [-0.75275624],
+        [ 0.68083423],
+        [-0.72967666],
+        [ 0.67032212],
+        [-0.76267838],
+        [ 0.74076569],
+        [-0.75786185],
+        [ 0.72630405],
+        [-0.75052720],
+        [ 0.72156119],
+        [-0.72995359],
+        [ 0.71151376],
+        [-0.72388291],
+        [ 0.70984429],
+        [-0.75101912],
+        [ 0.73972934],
+        [-0.74650168],
+        [ 0.66916001],
+        [-0.76804328],
+        [ 0.67921323],
+        [-0.73183489],
+        [ 0.71886671],
+        [-0.75066972],
+        [ 0.71701139],
+        [-0.74750781],
+        [ 0.71889770],
+        [-0.74946779],
+        [ 0.55187559],
+        [-0.55821908],
+        [ 0.71838552],
+        [-0.75582576],
+        [ 0.70697069],
+        [-0.74820876],
+        [ 0.51458275],
+        [-0.86906463],
+        [ 0.74140429],
+        [-0.74711400],
+        [ 0.71637911],
+        [-0.72538012],
+        [ 0.70939046],
+        [-0.75860715],
+        [ 0.69854164],
+        [-0.76026905],
+        [ 0.67305511],
+        [-0.76007241],
+        [ 0.68095946],
+        [-0.68809527],
+        [ 0.80940366],
+        [-0.84252703],
+        [ 0.66542983],
+        [-0.76499140],
+        [ 0.70827210],
+        [-0.75943840],
+        [ 0.67160255],
+        [-0.75584120],
+        [ 0.73973936],
+        [-0.74919224],
+        [ 0.71619999],
+        [-0.72318840],
+        [ 0.67989862],
+        [-0.68809879],
+        [ 0.73199457],
+        [-0.75753683],
+        [ 0.55040902],
+        [-0.67115992],
+        [ 0.72607672],
+        [-0.75564593],
+        [ 0.68229717],
+        [-0.71295351],
+        [ 0.66114551],
+        [-0.77202576],
+        [ 0.73973966],
+        [-0.74729866],
+        [ 0.70827883],
+        [-0.75828338],
+        [ 0.70793420],
+        [-0.74711305],
+        [ 0.68271047],
+        [-0.73251075],
+        [ 0.67308545],
+        [-0.75671512],
+        [ 0.67034715],
+        [-0.76026624],
+        [ 0.66773528],
+        [-0.76350611],
+        [ 0.67665219],
+        [-0.73220283],
+        [ 0.70828331],
+        [-0.75752854],
+        [ 0.67864287],
+        [-0.72905117],
+        [ 0.69290996],
+        [-0.75322455],
+        [ 0.56151795],
+        [-0.66758502],
+        [ 0.70795351],
+        [-0.74704117],
+        [ 0.78977567],
+        [-0.83325642],
+        [ 0.67940599],
+        [-0.75460947],
+        [ 0.72744906],
+        [-0.72982359],
+        [ 0.70189136],
+        [-0.75648481],
+        [ 0.71933293],
+        [-0.74630398],
+        [ 0.61878061],
+        [-0.63036257],
+        [ 0.67298037],
+        [-0.72865760],
+        [ 0.66678101],
+        [-0.76823407],
+        [ 0.71605569],
+        [-0.72538227],
+        [ 0.63679439],
+        [-0.68364358],
+        [ 0.74294937],
+        [-0.75123471],
+        [ 0.71741933],
+        [-0.74762642],
+        [ 0.71839195],
+        [-0.75304002],
+        [ 0.67921329],
+        [-0.71360886],
+        [ 0.71392494],
+        [-0.75798714],
+        [ 0.61660612],
+        [-0.71338660],
+        [ 0.67206579],
+        [-0.73238927],
+        [ 0.68133050],
+        [-0.76294971],
+        [ 0.68247032],
+        [-0.74284077],
+        [ 0.74744481],
+        [-0.77455825],
+        [ 0.73916376],
+        [-0.75613207],
+        [ 0.73917294],
+        [-0.74715453],
+        [ 0.73229110],
+        [-0.77923977],
+        [ 0.71034139],
+        [-0.75098127],
+        [ 0.67039049],
+        [-0.75602990],
+        [ 0.74294925],
+        [-0.74950910],
+        [ 0.67864305],
+        [-0.75629067],
+        [ 0.71755296],
+        [-0.75739759],
+        [ 0.69205266],
+        [-0.75446862],
+        [ 0.67921323],
+        [-0.69903100],
+        [ 0.67921335],
+        [-0.72903782],
+        [ 0.53733480],
+        [-0.83914012],
+        [ 0.71214759],
+        [-0.75092554],
+        [ 0.70940340],
+        [-0.75608629],
+        [ 0.61769038],
+        [-0.61892813],
+        [ 0.66773719],
+        [-0.76226741],
+        [ 0.69374371],
+        [-0.76344609],
+        [ 0.63565296],
+        [-0.68433106],
+        [ 0.68596303],
+        [-0.73408073]], device='cuda:0')
+Worst class: (+ rhs) -0.8690924644470215
+Iteration 1
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 3.
+Avg perturbation: 0.028556233271956444
+Worst bound: tensor([-0.02679861], device='cuda:0')
+Total time: 0.0432  pickout: 0.0002 decision: 0.0009  bounding: 0.0415 add_domain: 0.0005
+length of domains: 437
+100 branch and bound domains visited
+Current (lb-rhs): -0.10777544975280762
+Cumulative time: 2.2722702026367188
+
+Iteration 2
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.07357602566480637
+Worst bound: tensor([-0.02876037], device='cuda:0')
+Total time: 0.3153  pickout: 0.0002 decision: 0.0009  bounding: 0.3137 add_domain: 0.0005
+length of domains: 405
+200 branch and bound domains visited
+Current (lb-rhs): -0.10564309358596802
+Cumulative time: 2.5877931118011475
+
+Iteration 3
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06718505918979645
+Worst bound: tensor([-0.02616107], device='cuda:0')
+Total time: 0.0407  pickout: 0.0002 decision: 0.0009  bounding: 0.0391 add_domain: 0.0005
+length of domains: 378
+300 branch and bound domains visited
+Current (lb-rhs): -0.10456222295761108
+Cumulative time: 2.628671407699585
+
+Iteration 4
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06735339015722275
+Worst bound: tensor([-0.02838355], device='cuda:0')
+Total time: 0.0406  pickout: 0.0002 decision: 0.0008  bounding: 0.0390 add_domain: 0.0005
+length of domains: 344
+400 branch and bound domains visited
+Current (lb-rhs): -0.10456222295761108
+Cumulative time: 2.6694295406341553
+
+Iteration 5
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04956405237317085
+Worst bound: tensor([-0.03010333], device='cuda:0')
+Total time: 0.0408  pickout: 0.0002 decision: 0.0008  bounding: 0.0393 add_domain: 0.0005
+length of domains: 314
+500 branch and bound domains visited
+Current (lb-rhs): -0.10456222295761108
+Cumulative time: 2.7103991508483887
+
+Iteration 6
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03793353959918022
+Worst bound: tensor([-0.01901501], device='cuda:0')
+Total time: 0.0409  pickout: 0.0002 decision: 0.0008  bounding: 0.0394 add_domain: 0.0005
+length of domains: 282
+600 branch and bound domains visited
+Current (lb-rhs): -0.10456222295761108
+Cumulative time: 2.751527786254883
+
+Iteration 7
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.09531043469905853
+Worst bound: tensor([-0.02928907], device='cuda:0')
+Total time: 0.0455  pickout: 0.0002 decision: 0.0071  bounding: 0.0378 add_domain: 0.0005
+length of domains: 256
+700 branch and bound domains visited
+Current (lb-rhs): -0.10416269302368164
+Cumulative time: 2.797258138656616
+
+Iteration 8
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04786092787981033
+Worst bound: tensor([-0.02744162], device='cuda:0')
+Total time: 0.0408  pickout: 0.0002 decision: 0.0008  bounding: 0.0393 add_domain: 0.0005
+length of domains: 228
+800 branch and bound domains visited
+Current (lb-rhs): -0.10416269302368164
+Cumulative time: 2.838225841522217
+
+Iteration 9
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08205203711986542
+Worst bound: tensor([-0.02883077], device='cuda:0')
+Total time: 0.0405  pickout: 0.0002 decision: 0.0008  bounding: 0.0390 add_domain: 0.0005
+length of domains: 196
+900 branch and bound domains visited
+Current (lb-rhs): -0.10416269302368164
+Cumulative time: 2.8789525032043457
+
+Iteration 10
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.06114743649959564
+Worst bound: tensor([-0.00964469], device='cuda:0')
+Total time: 0.0405  pickout: 0.0002 decision: 0.0009  bounding: 0.0390 add_domain: 0.0005
+length of domains: 159
+1000 branch and bound domains visited
+Current (lb-rhs): -0.10416269302368164
+Cumulative time: 2.9196157455444336
+
+Iteration 11
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03636080026626587
+Worst bound: tensor([-0.02418536], device='cuda:0')
+Total time: 0.0413  pickout: 0.0002 decision: 0.0009  bounding: 0.0397 add_domain: 0.0005
+length of domains: 131
+1100 branch and bound domains visited
+Current (lb-rhs): -0.10300743579864502
+Cumulative time: 2.961059331893921
+
+Iteration 12
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.04365355893969536
+Worst bound: tensor([-0.02822691], device='cuda:0')
+Total time: 0.0408  pickout: 0.0002 decision: 0.0008  bounding: 0.0393 add_domain: 0.0005
+length of domains: 93
+1200 branch and bound domains visited
+Current (lb-rhs): -0.10300743579864502
+Cumulative time: 3.0020227432250977
+
+Iteration 13
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.08389907330274582
+Worst bound: tensor([-0.02783942], device='cuda:0')
+Total time: 0.0405  pickout: 0.0002 decision: 0.0008  bounding: 0.0390 add_domain: 0.0005
+length of domains: 61
+1300 branch and bound domains visited
+Current (lb-rhs): -0.05920243263244629
+Cumulative time: 3.042672634124756
+
+Iteration 14
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 2.
+Avg perturbation: 0.03640104457736015
+Worst bound: tensor([-0.00930303], device='cuda:0')
+Total time: 0.0409  pickout: 0.0002 decision: 0.0008  bounding: 0.0394 add_domain: 0.0005
+length of domains: 31
+1400 branch and bound domains visited
+Current (lb-rhs): -0.01179438829421997
+Cumulative time: 3.083738088607788
+
+Iteration 15
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.04340282455086708
+Worst bound: tensor([-0.00314194], device='cuda:0')
+Total time: 0.0409  pickout: 0.0002 decision: 0.0008  bounding: 0.0394 add_domain: 0.0005
+length of domains: 9
+1462 branch and bound domains visited
+Current (lb-rhs): -0.003141939640045166
+Cumulative time: 3.124821186065674
+
+Iteration 16
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.025510597974061966
+Worst bound: tensor([-0.00065643], device='cuda:0')
+Total time: 0.0399  pickout: 0.0002 decision: 0.0008  bounding: 0.0384 add_domain: 0.0005
+length of domains: 3
+1480 branch and bound domains visited
+Current (lb-rhs): -0.000656425952911377
+Cumulative time: 3.1648623943328857
+
+Iteration 17
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.017383860424160957
+Worst bound: tensor([-0.00013405], device='cuda:0')
+Total time: 0.0397  pickout: 0.0002 decision: 0.0008  bounding: 0.0382 add_domain: 0.0004
+length of domains: 1
+1486 branch and bound domains visited
+Current (lb-rhs): -0.00013405084609985352
+Cumulative time: 3.204633951187134
+
+Iteration 18
+Batch size: 50
+Using Linf sparse perturbation. Perturbed dimensions: 1.
+Avg perturbation: 0.01053754985332489
+Worst bound: tensor([8.19563866e-05], device='cuda:0')
+Total time: 0.0384  pickout: 0.0001 decision: 0.0013  bounding: 0.0368 add_domain: 0.0002
+length of domains: 0
+1490 branch and bound domains visited
+No domains left, verification finished!
+The lower bound of last batch is -0.7302289009094238
+Cumulative time: 3.243152379989624
+
+Result: unsat
+Time: 7.9381139278411865

@@ -1,0 +1,11 @@
+InputQuery: /tmp/tmp0sswodma
+Engine::processInputQuery: Input query (before preprocessing): 964 equations, 1775 variables
+unsat
+Running Marabou with the following arguments:  []
+Time 1.928929328918457
+Property: ../Benchmarks/marabou_txt/pensieve_1_2_0_6.txt
+Number of variables: 1775
+Number of lower bounds: 816
+Number of upper bounds: 48
+Number of equations: 964
+Number of non-linear constraints: 768

@@ -1,0 +1,11 @@
+InputQuery: /tmp/tmp7edxatsi
+Engine::processInputQuery: Input query (before preprocessing): 27 equations, 58 variables
+unsat
+Running Marabou with the following arguments:  []
+Time 0.0301210880279541
+Property: ../Benchmarks/marabou_txt/aurora_101_3_1_5.txt
+Number of variables: 58
+Number of lower bounds: 31
+Number of upper bounds: 31
+Number of equations: 27
+Number of non-linear constraints: 1

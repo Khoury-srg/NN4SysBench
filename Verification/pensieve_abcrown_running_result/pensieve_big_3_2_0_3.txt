@@ -1,0 +1,692 @@
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: matrix
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: false
+  eval_adv_example: false
+  show_adv_example: false
+  precompile_jit: false
+  complete_verifier: bab
+  enable_incomplete_verification: false
+  csv_name: null
+  results_file: out.txt
+  root_path: ''
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  no_batchdim_buffers: false
+  save_output: false
+  output_file: out.pkl
+model:
+  name: null
+  path: null
+  onnx_path: ../Benchmarks/onnx/pensieve_big_parallel.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: '''Reshape'': ''fix_batch_size'': True'
+  input_shape: [-1, 12, 8]
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: none
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optmized: false
+  flatten_final_output: false
+  optimize_graph: null
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: ../Benchmarks/vnnlib/pensieve_3_2_0_3.vnnlib
+  vnnlib_path_prefix: ''
+  rhs_offset: null
+solver:
+  batch_size: 1
+  auto_enlarge_batch_size: false
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    apply_output_constraints_to: []
+    disable_optimization: []
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 50
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    dynamic: false
+    max_dim: 10000
+  multi_class:
+    label_batch_size: 32
+    skip_with_refined_bound: true
+  mip:
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+bab:
+  initial_max_domains: 1
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 360
+  timeout_scale: 1
+  override_timeout: null
+  get_upper_bound: false
+  dfs_percent: 0.0
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  cut:
+    enabled: false
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+  branching:
+    method: sb
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    sb_coeff_thresh: 0.1
+    nonlinear_split:
+      method: shortcut
+      branching_point_method: uniform
+      num_branches: 2
+      branching_point_refinement: false
+      filter: false
+      filter_beta: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      shortlist_size: 500
+      loose_tanh_threshold: null
+    new_input_split:
+      enable: false
+      batch_size: 2
+      rounds: 1
+      init_alpha_batch_size: 8192
+      full_alpha: false
+    input_split:
+      enable: true
+      enhanced_bound_prop_method: alpha-crown
+      enhanced_branching_method: naive
+      enhanced_bound_patience: 100000000.0
+      attack_patience: 100000000.0
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_primary_spec: null
+      sb_primary_spec_iter: 1
+      sb_sum: false
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_zero_crossing_score: false
+      ibp_enhancement: false
+      catch_assertion: false
+      compare_with_old_bounds: false
+      update_rhs_with_attack: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  pgd_order: before
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_loss_mode: null
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  check_clean: false
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_enhanced:
+    pgd_steps: 200
+    pgd_restarts: 500000
+    pgd_alpha: auto
+  input_split_check_adv:
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+
+Experiments at Sat Oct 21 12:44:47 2023 on srg07
+Internal results will be saved to out.txt.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx ../Benchmarks/onnx/pensieve_big_parallel.onnx
+Using vnnlib ../Benchmarks/vnnlib/pensieve_3_2_0_3.vnnlib
+Precompiled vnnlib file found at ../Benchmarks/vnnlib/pensieve_3_2_0_3.vnnlib.compiled
+Loading onnx ../Benchmarks/onnx/pensieve_big_parallel.onnx wih quirks {'Reshape': {'fix_batch_size': True}}
+Attack parameters: initialization=uniform, steps=100, restarts=30, alpha=0.006250001490116119, initialization=uniform, GAMA=False
+Model output of first 5 examples:
+ tensor([[217.75975037]], device='cuda:0')
+Adv example prediction (first 2 examples and 2 restarts):
+ tensor([[[217.51815796]]], device='cuda:0')
+PGD attack margin (first 2 examles and 10 specs):
+ tensor([[[217.51815796]]], device='cuda:0')
+number of violation:  0
+Attack finished in 3.4524 seconds.
+PGD attack failed
+Total VNNLIB file length: 1, max property batch size: 1, total number of batches: 1
+
+Properties batch 0, size 1
+Remaining timeout: 355.2271194458008
+##### Instance 0 first 10 spec matrices: 
+tensor([[[1.]]], dtype=torch.float64)
+thresholds: tensor([0.], device='cuda:0') ######
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=False)
+  (/shape): BoundBuffers(name=/shape, inputs=[], perturbed=False)
+  (/19): BoundParams(name=/19, inputs=[], perturbed=False)
+  (/20): BoundParams(name=/20, inputs=[], perturbed=False)
+  (/25): BoundParams(name=/25, inputs=[], perturbed=False)
+  (/26): BoundParams(name=/26, inputs=[], perturbed=False)
+  (/31): BoundParams(name=/31, inputs=[], perturbed=False)
+  (/32): BoundParams(name=/32, inputs=[], perturbed=False)
+  (/37): BoundParams(name=/37, inputs=[], perturbed=False)
+  (/38): BoundParams(name=/38, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundBuffers(name=/59, inputs=[], perturbed=False)
+  (/60): BoundBuffers(name=/60, inputs=[], perturbed=False)
+  (/65): BoundParams(name=/65, inputs=[], perturbed=False)
+  (/66): BoundParams(name=/66, inputs=[], perturbed=False)
+  (/71): BoundParams(name=/71, inputs=[], perturbed=False)
+  (/72): BoundParams(name=/72, inputs=[], perturbed=False)
+  (/77): BoundParams(name=/77, inputs=[], perturbed=False)
+  (/78): BoundParams(name=/78, inputs=[], perturbed=False)
+  (/83): BoundParams(name=/83, inputs=[], perturbed=False)
+  (/84): BoundParams(name=/84, inputs=[], perturbed=False)
+  (/93): BoundParams(name=/93, inputs=[], perturbed=False)
+  (/94): BoundParams(name=/94, inputs=[], perturbed=False)
+  (/99): BoundParams(name=/99, inputs=[], perturbed=False)
+  (/100): BoundParams(name=/100, inputs=[], perturbed=False)
+  (/101): BoundParams(name=/101, inputs=[], perturbed=False)
+  (/102): BoundParams(name=/102, inputs=[], perturbed=False)
+  (/103): BoundParams(name=/103, inputs=[], perturbed=False)
+  (/104): BoundParams(name=/104, inputs=[], perturbed=False)
+  (/105): BoundBuffers(name=/105, inputs=[], perturbed=False)
+  (/106): BoundSplit(name=/106, inputs=[/shape], perturbed=False)
+  (/107): BoundSplit(name=/107, inputs=[/shape], perturbed=False)
+  (/108): BoundSplit(name=/108, inputs=[/shape], perturbed=False)
+  (/109): BoundSqueeze(name=/109, inputs=[/106], perturbed=False)
+  (/110): BoundSqueeze(name=/110, inputs=[/107], perturbed=False)
+  (/111): BoundSqueeze(name=/111, inputs=[/108], perturbed=False)
+  (/112): BoundUnsqueeze(name=/112, inputs=[/109], perturbed=False)
+  (/113): BoundUnsqueeze(name=/113, inputs=[/110], perturbed=False)
+  (/114): BoundUnsqueeze(name=/114, inputs=[/111], perturbed=False)
+  (/115): BoundConcat(name=/115, inputs=[/112, /113, /114], perturbed=False)
+  (/tensor): BoundReshape(name=/tensor, inputs=[/0, /115], perturbed=False)
+  (/117): BoundSplit(name=/117, inputs=[/tensor], perturbed=False)
+  (/118): BoundSplit(name=/118, inputs=[/tensor], perturbed=False)
+  (/119): BoundConstant(name=/119, value=1)
+  (/120): BoundConstant(name=/120, value=0)
+  (/121): BoundConstant(name=/121, value=0)
+  (/122): BoundConstant(name=/122, value=1)
+  (/123): BoundAdd(name=/123, inputs=[/121, /122], perturbed=False)
+  (/124): BoundUnsqueeze(name=/124, inputs=[/120], perturbed=False)
+  (/125): BoundUnsqueeze(name=/125, inputs=[/123], perturbed=False)
+  (/126): BoundUnsqueeze(name=/126, inputs=[/119], perturbed=False)
+  (/127): BoundSlice(name=/127, inputs=[/117, /124, /125, /126], perturbed=False)
+  (/128): BoundShape(name=/128, inputs=[/127], perturbed=False)
+  (/129): BoundConstant(name=/129, value=2)
+  (/130): BoundGather(name=/130, inputs=[/128, /129], perturbed=False)
+  (/131): BoundConstant(name=/131, value=1)
+  (/132): BoundSub(name=/132, inputs=[/130, /131], perturbed=False)
+  (/133): BoundCast(name=/133, inputs=[/132], perturbed=False)
+  (/134): BoundConstant(name=/134, value=tensor([1], device='cuda:0'))
+  (/135): BoundReshape(name=/135, inputs=[/133, /134], perturbed=False)
+  (/136): BoundCast(name=/136, inputs=[/135], perturbed=False)
+  (/137): BoundGather(name=/137, inputs=[/127, /136], perturbed=False)
+  (/138): BoundSqueeze(name=/138, inputs=[/137], perturbed=False)
+  (/input): BoundLinear(name=/input, inputs=[/138, /19, /20], perturbed=False)
+  (/140): BoundRelu(name=/140, inputs=[/input], perturbed=False)
+  (/141): BoundConstant(name=/141, value=1)
+  (/142): BoundConstant(name=/142, value=1)
+  (/143): BoundConstant(name=/143, value=1)
+  (/144): BoundConstant(name=/144, value=1)
+  (/145): BoundAdd(name=/145, inputs=[/143, /144], perturbed=False)
+  (/146): BoundUnsqueeze(name=/146, inputs=[/142], perturbed=False)
+  (/147): BoundUnsqueeze(name=/147, inputs=[/145], perturbed=False)
+  (/148): BoundUnsqueeze(name=/148, inputs=[/141], perturbed=False)
+  (/149): BoundSlice(name=/149, inputs=[/117, /146, /147, /148], perturbed=False)
+  (/150): BoundShape(name=/150, inputs=[/149], perturbed=False)
+  (/151): BoundConstant(name=/151, value=2)
+  (/152): BoundGather(name=/152, inputs=[/150, /151], perturbed=False)
+  (/153): BoundConstant(name=/153, value=1)
+  (/154): BoundSub(name=/154, inputs=[/152, /153], perturbed=False)
+  (/155): BoundCast(name=/155, inputs=[/154], perturbed=False)
+  (/156): BoundConstant(name=/156, value=tensor([1], device='cuda:0'))
+  (/157): BoundReshape(name=/157, inputs=[/155, /156], perturbed=False)
+  (/158): BoundCast(name=/158, inputs=[/157], perturbed=False)
+  (/159): BoundGather(name=/159, inputs=[/149, /158], perturbed=False)
+  (/160): BoundSqueeze(name=/160, inputs=[/159], perturbed=False)
+  (/input.3): BoundLinear(name=/input.3, inputs=[/160, /25, /26], perturbed=False)
+  (/162): BoundRelu(name=/162, inputs=[/input.3], perturbed=False)
+  (/163): BoundConstant(name=/163, value=1)
+  (/164): BoundConstant(name=/164, value=2)
+  (/165): BoundConstant(name=/165, value=2)
+  (/166): BoundConstant(name=/166, value=1)
+  (/167): BoundAdd(name=/167, inputs=[/165, /166], perturbed=False)
+  (/168): BoundUnsqueeze(name=/168, inputs=[/164], perturbed=False)
+  (/169): BoundUnsqueeze(name=/169, inputs=[/167], perturbed=False)
+  (/170): BoundUnsqueeze(name=/170, inputs=[/163], perturbed=False)
+  (/input.7): BoundSlice(name=/input.7, inputs=[/117, /168, /169, /170], perturbed=False)
+  (/input.11): BoundConv(name=/input.11, inputs=[/input.7, /31, /32], perturbed=False)
+  (/173): BoundRelu(name=/173, inputs=[/input.11], perturbed=False)
+  (/174): BoundConstant(name=/174, value=1)
+  (/175): BoundConstant(name=/175, value=3)
+  (/176): BoundConstant(name=/176, value=3)
+  (/177): BoundConstant(name=/177, value=1)
+  (/178): BoundAdd(name=/178, inputs=[/176, /177], perturbed=False)
+  (/179): BoundUnsqueeze(name=/179, inputs=[/175], perturbed=False)
+  (/180): BoundUnsqueeze(name=/180, inputs=[/178], perturbed=False)
+  (/181): BoundUnsqueeze(name=/181, inputs=[/174], perturbed=False)
+  (/input.15): BoundSlice(name=/input.15, inputs=[/117, /179, /180, /181], perturbed=False)
+  (/input.19): BoundConv(name=/input.19, inputs=[/input.15, /37, /38], perturbed=False)
+  (/184): BoundRelu(name=/184, inputs=[/input.19], perturbed=False)
+  (/185): BoundConstant(name=/185, value=1)
+  (/186): BoundConstant(name=/186, value=4)
+  (/187): BoundConstant(name=/187, value=4)
+  (/188): BoundConstant(name=/188, value=1)
+  (/189): BoundAdd(name=/189, inputs=[/187, /188], perturbed=False)
+  (/190): BoundUnsqueeze(name=/190, inputs=[/186], perturbed=False)
+  (/191): BoundUnsqueeze(name=/191, inputs=[/189], perturbed=False)
+  (/192): BoundUnsqueeze(name=/192, inputs=[/185], perturbed=False)
+  (/193): BoundSlice(name=/193, inputs=[/117, /190, /191, /192], perturbed=False)
+  (/194): BoundConstant(name=/194, value=2)
+  (/195): BoundConstant(name=/195, value=0)
+  (/196): BoundConstant(name=/196, value=0)
+  (/197): BoundConstant(name=/197, value=6)
+  (/198): BoundAdd(name=/198, inputs=[/196, /197], perturbed=False)
+  (/199): BoundUnsqueeze(name=/199, inputs=[/195], perturbed=False)
+  (/200): BoundUnsqueeze(name=/200, inputs=[/198], perturbed=False)
+  (/201): BoundUnsqueeze(name=/201, inputs=[/194], perturbed=False)
+  (/input.23): BoundSlice(name=/input.23, inputs=[/193, /199, /200, /201], perturbed=False)
+  (/input.27): BoundConv(name=/input.27, inputs=[/input.23, /47, /48], perturbed=False)
+  (/204): BoundRelu(name=/204, inputs=[/input.27], perturbed=False)
+  (/205): BoundConstant(name=/205, value=1)
+  (/206): BoundConstant(name=/206, value=5)
+  (/207): BoundConstant(name=/207, value=5)
+  (/208): BoundConstant(name=/208, value=1)
+  (/209): BoundAdd(name=/209, inputs=[/207, /208], perturbed=False)
+  (/210): BoundUnsqueeze(name=/210, inputs=[/206], perturbed=False)
+  (/211): BoundUnsqueeze(name=/211, inputs=[/209], perturbed=False)
+  (/212): BoundUnsqueeze(name=/212, inputs=[/205], perturbed=False)
+  (/213): BoundSlice(name=/213, inputs=[/117, /210, /211, /212], perturbed=False)
+  (/214): BoundShape(name=/214, inputs=[/213], perturbed=False)
+  (/215): BoundConstant(name=/215, value=2)
+  (/216): BoundGather(name=/216, inputs=[/214, /215], perturbed=False)
+  (/217): BoundConstant(name=/217, value=1)
+  (/218): BoundSub(name=/218, inputs=[/216, /217], perturbed=False)
+  (/219): BoundCast(name=/219, inputs=[/218], perturbed=False)
+  (/220): BoundConstant(name=/220, value=tensor([1], device='cuda:0'))
+  (/221): BoundReshape(name=/221, inputs=[/219, /220], perturbed=False)
+  (/222): BoundCast(name=/222, inputs=[/221], perturbed=False)
+  (/223): BoundGather(name=/223, inputs=[/213, /222], perturbed=False)
+  (/224): BoundSqueeze(name=/224, inputs=[/223], perturbed=False)
+  (/225): BoundLinear(name=/225, inputs=[/224, /53, /54], perturbed=False)
+  (/226): BoundFlatten(name=/226, inputs=[/173], perturbed=False)
+  (/227): BoundFlatten(name=/227, inputs=[/184], perturbed=False)
+  (/228): BoundFlatten(name=/228, inputs=[/204], perturbed=False)
+  (/229): BoundConcat(name=/229, inputs=[/140, /162, /226, /227, /228, /225], perturbed=False)
+  (/input.31): BoundLinear(name=/input.31, inputs=[/229, /55, /56], perturbed=False)
+  (/231): BoundRelu(name=/231, inputs=[/input.31], perturbed=False)
+  (/input.35): BoundLinear(name=/input.35, inputs=[/231, /57, /58], perturbed=False)
+  (/233): BoundRelu(name=/233, inputs=[/input.35], perturbed=False)
+  (/234): BoundPow(name=/234, inputs=[/233, /59], perturbed=False)
+  (/235): BoundReduceSum(name=/235, inputs=[/234], perturbed=False)
+  (/237): BoundMatMul(name=/237, inputs=[/236/mul, /60], perturbed=False)
+  (/238): BoundConstant(name=/238, value=1)
+  (/239): BoundConstant(name=/239, value=0)
+  (/240): BoundConstant(name=/240, value=0)
+  (/241): BoundConstant(name=/241, value=1)
+  (/242): BoundAdd(name=/242, inputs=[/240, /241], perturbed=False)
+  (/243): BoundUnsqueeze(name=/243, inputs=[/239], perturbed=False)
+  (/244): BoundUnsqueeze(name=/244, inputs=[/242], perturbed=False)
+  (/245): BoundUnsqueeze(name=/245, inputs=[/238], perturbed=False)
+  (/246): BoundSlice(name=/246, inputs=[/118, /243, /244, /245], perturbed=False)
+  (/247): BoundShape(name=/247, inputs=[/246], perturbed=False)
+  (/248): BoundConstant(name=/248, value=2)
+  (/249): BoundGather(name=/249, inputs=[/247, /248], perturbed=False)
+  (/250): BoundConstant(name=/250, value=1)
+  (/251): BoundSub(name=/251, inputs=[/249, /250], perturbed=False)
+  (/252): BoundCast(name=/252, inputs=[/251], perturbed=False)
+  (/253): BoundConstant(name=/253, value=tensor([1], device='cuda:0'))
+  (/254): BoundReshape(name=/254, inputs=[/252, /253], perturbed=False)
+  (/255): BoundCast(name=/255, inputs=[/254], perturbed=False)
+  (/256): BoundGather(name=/256, inputs=[/246, /255], perturbed=False)
+  (/257): BoundSqueeze(name=/257, inputs=[/256], perturbed=False)
+  (/input.39): BoundLinear(name=/input.39, inputs=[/257, /65, /66], perturbed=False)
+  (/259): BoundRelu(name=/259, inputs=[/input.39], perturbed=False)
+  (/260): BoundConstant(name=/260, value=1)
+  (/261): BoundConstant(name=/261, value=1)
+  (/262): BoundConstant(name=/262, value=1)
+  (/263): BoundConstant(name=/263, value=1)
+  (/264): BoundAdd(name=/264, inputs=[/262, /263], perturbed=False)
+  (/265): BoundUnsqueeze(name=/265, inputs=[/261], perturbed=False)
+  (/266): BoundUnsqueeze(name=/266, inputs=[/264], perturbed=False)
+  (/267): BoundUnsqueeze(name=/267, inputs=[/260], perturbed=False)
+  (/268): BoundSlice(name=/268, inputs=[/118, /265, /266, /267], perturbed=False)
+  (/269): BoundShape(name=/269, inputs=[/268], perturbed=False)
+  (/270): BoundConstant(name=/270, value=2)
+  (/271): BoundGather(name=/271, inputs=[/269, /270], perturbed=False)
+  (/272): BoundConstant(name=/272, value=1)
+  (/273): BoundSub(name=/273, inputs=[/271, /272], perturbed=False)
+  (/274): BoundCast(name=/274, inputs=[/273], perturbed=False)
+  (/275): BoundConstant(name=/275, value=tensor([1], device='cuda:0'))
+  (/276): BoundReshape(name=/276, inputs=[/274, /275], perturbed=False)
+  (/277): BoundCast(name=/277, inputs=[/276], perturbed=False)
+  (/278): BoundGather(name=/278, inputs=[/268, /277], perturbed=False)
+  (/279): BoundSqueeze(name=/279, inputs=[/278], perturbed=False)
+  (/input.43): BoundLinear(name=/input.43, inputs=[/279, /71, /72], perturbed=False)
+  (/281): BoundRelu(name=/281, inputs=[/input.43], perturbed=False)
+  (/282): BoundConstant(name=/282, value=1)
+  (/283): BoundConstant(name=/283, value=2)
+  (/284): BoundConstant(name=/284, value=2)
+  (/285): BoundConstant(name=/285, value=1)
+  (/286): BoundAdd(name=/286, inputs=[/284, /285], perturbed=False)
+  (/287): BoundUnsqueeze(name=/287, inputs=[/283], perturbed=False)
+  (/288): BoundUnsqueeze(name=/288, inputs=[/286], perturbed=False)
+  (/289): BoundUnsqueeze(name=/289, inputs=[/282], perturbed=False)
+  (/input.47): BoundSlice(name=/input.47, inputs=[/118, /287, /288, /289], perturbed=False)
+  (/input.51): BoundConv(name=/input.51, inputs=[/input.47, /77, /78], perturbed=False)
+  (/292): BoundRelu(name=/292, inputs=[/input.51], perturbed=False)
+  (/293): BoundConstant(name=/293, value=1)
+  (/294): BoundConstant(name=/294, value=3)
+  (/295): BoundConstant(name=/295, value=3)
+  (/296): BoundConstant(name=/296, value=1)
+  (/297): BoundAdd(name=/297, inputs=[/295, /296], perturbed=False)
+  (/298): BoundUnsqueeze(name=/298, inputs=[/294], perturbed=False)
+  (/299): BoundUnsqueeze(name=/299, inputs=[/297], perturbed=False)
+  (/300): BoundUnsqueeze(name=/300, inputs=[/293], perturbed=False)
+  (/input.55): BoundSlice(name=/input.55, inputs=[/118, /298, /299, /300], perturbed=False)
+  (/input.59): BoundConv(name=/input.59, inputs=[/input.55, /83, /84], perturbed=False)
+  (/303): BoundRelu(name=/303, inputs=[/input.59], perturbed=False)
+  (/304): BoundConstant(name=/304, value=1)
+  (/305): BoundConstant(name=/305, value=4)
+  (/306): BoundConstant(name=/306, value=4)
+  (/307): BoundConstant(name=/307, value=1)
+  (/308): BoundAdd(name=/308, inputs=[/306, /307], perturbed=False)
+  (/309): BoundUnsqueeze(name=/309, inputs=[/305], perturbed=False)
+  (/310): BoundUnsqueeze(name=/310, inputs=[/308], perturbed=False)
+  (/311): BoundUnsqueeze(name=/311, inputs=[/304], perturbed=False)
+  (/312): BoundSlice(name=/312, inputs=[/118, /309, /310, /311], perturbed=False)
+  (/313): BoundConstant(name=/313, value=2)
+  (/314): BoundConstant(name=/314, value=0)
+  (/315): BoundConstant(name=/315, value=0)
+  (/316): BoundConstant(name=/316, value=6)
+  (/317): BoundAdd(name=/317, inputs=[/315, /316], perturbed=False)
+  (/318): BoundUnsqueeze(name=/318, inputs=[/314], perturbed=False)
+  (/319): BoundUnsqueeze(name=/319, inputs=[/317], perturbed=False)
+  (/320): BoundUnsqueeze(name=/320, inputs=[/313], perturbed=False)
+  (/input.63): BoundSlice(name=/input.63, inputs=[/312, /318, /319, /320], perturbed=False)
+  (/input.67): BoundConv(name=/input.67, inputs=[/input.63, /93, /94], perturbed=False)
+  (/323): BoundRelu(name=/323, inputs=[/input.67], perturbed=False)
+  (/324): BoundConstant(name=/324, value=1)
+  (/325): BoundConstant(name=/325, value=5)
+  (/326): BoundConstant(name=/326, value=5)
+  (/327): BoundConstant(name=/327, value=1)
+  (/328): BoundAdd(name=/328, inputs=[/326, /327], perturbed=False)
+  (/329): BoundUnsqueeze(name=/329, inputs=[/325], perturbed=False)
+  (/330): BoundUnsqueeze(name=/330, inputs=[/328], perturbed=False)
+  (/331): BoundUnsqueeze(name=/331, inputs=[/324], perturbed=False)
+  (/332): BoundSlice(name=/332, inputs=[/118, /329, /330, /331], perturbed=False)
+  (/333): BoundShape(name=/333, inputs=[/332], perturbed=False)
+  (/334): BoundConstant(name=/334, value=2)
+  (/335): BoundGather(name=/335, inputs=[/333, /334], perturbed=False)
+  (/336): BoundConstant(name=/336, value=1)
+  (/337): BoundSub(name=/337, inputs=[/335, /336], perturbed=False)
+  (/338): BoundCast(name=/338, inputs=[/337], perturbed=False)
+  (/339): BoundConstant(name=/339, value=tensor([1], device='cuda:0'))
+  (/340): BoundReshape(name=/340, inputs=[/338, /339], perturbed=False)
+  (/341): BoundCast(name=/341, inputs=[/340], perturbed=False)
+  (/342): BoundGather(name=/342, inputs=[/332, /341], perturbed=False)
+  (/343): BoundSqueeze(name=/343, inputs=[/342], perturbed=False)
+  (/344): BoundLinear(name=/344, inputs=[/343, /99, /100], perturbed=False)
+  (/345): BoundFlatten(name=/345, inputs=[/292], perturbed=False)
+  (/346): BoundFlatten(name=/346, inputs=[/303], perturbed=False)
+  (/347): BoundFlatten(name=/347, inputs=[/323], perturbed=False)
+  (/348): BoundConcat(name=/348, inputs=[/259, /281, /345, /346, /347, /344], perturbed=False)
+  (/input.71): BoundLinear(name=/input.71, inputs=[/348, /101, /102], perturbed=False)
+  (/350): BoundRelu(name=/350, inputs=[/input.71], perturbed=False)
+  (/input.75): BoundLinear(name=/input.75, inputs=[/350, /103, /104], perturbed=False)
+  (/352): BoundRelu(name=/352, inputs=[/input.75], perturbed=False)
+  (/353): BoundPow(name=/353, inputs=[/352, /105], perturbed=False)
+  (/354): BoundReduceSum(name=/354, inputs=[/353], perturbed=False)
+  (/356): BoundMatMul(name=/356, inputs=[/355/mul, /60], perturbed=False)
+  (/357): BoundSub(name=/357, inputs=[/237, /356], perturbed=False)
+  (/236/reciprocal): BoundReciprocal(name=/236/reciprocal, inputs=[/235], perturbed=False)
+  (/236/mul): BoundMul(name=/236/mul, inputs=[/234, /236/reciprocal], perturbed=False)
+  (/355/reciprocal): BoundReciprocal(name=/355/reciprocal, inputs=[/354], perturbed=False)
+  (/355/mul): BoundMul(name=/355/mul, inputs=[/353, /355/reciprocal], perturbed=False)
+)
+Model prediction is: tensor([217.75971985], device='cuda:0')
+Split layers:
+  BoundLinear(name=/input, inputs=[/138, /19, /20], perturbed=True): [(BoundRelu(name=/140, inputs=[/input], perturbed=True), 0)]
+  BoundLinear(name=/input.3, inputs=[/160, /25, /26], perturbed=True): [(BoundRelu(name=/162, inputs=[/input.3], perturbed=True), 0)]
+  BoundConv(name=/input.11, inputs=[/input.7, /31, /32], perturbed=True): [(BoundRelu(name=/173, inputs=[/input.11], perturbed=True), 0)]
+  BoundConv(name=/input.19, inputs=[/input.15, /37, /38], perturbed=True): [(BoundRelu(name=/184, inputs=[/input.19], perturbed=True), 0)]
+  BoundConv(name=/input.27, inputs=[/input.23, /47, /48], perturbed=True): [(BoundRelu(name=/204, inputs=[/input.27], perturbed=True), 0)]
+  BoundLinear(name=/input.31, inputs=[/229, /55, /56], perturbed=True): [(BoundRelu(name=/231, inputs=[/input.31], perturbed=True), 0)]
+  BoundLinear(name=/input.35, inputs=[/231, /57, /58], perturbed=True): [(BoundRelu(name=/233, inputs=[/input.35], perturbed=True), 0)]
+  BoundRelu(name=/233, inputs=[/input.35], perturbed=True): [(BoundPow(name=/234, inputs=[/233, /59], perturbed=True), 0)]
+  BoundPow(name=/234, inputs=[/233, /59], perturbed=True): [(BoundMul(name=/236/mul, inputs=[/234, /236/reciprocal], perturbed=True), 0)]
+  BoundLinear(name=/input.39, inputs=[/257, /65, /66], perturbed=True): [(BoundRelu(name=/259, inputs=[/input.39], perturbed=True), 0)]
+  BoundLinear(name=/input.43, inputs=[/279, /71, /72], perturbed=True): [(BoundRelu(name=/281, inputs=[/input.43], perturbed=True), 0)]
+  BoundConv(name=/input.51, inputs=[/input.47, /77, /78], perturbed=True): [(BoundRelu(name=/292, inputs=[/input.51], perturbed=True), 0)]
+  BoundConv(name=/input.59, inputs=[/input.55, /83, /84], perturbed=True): [(BoundRelu(name=/303, inputs=[/input.59], perturbed=True), 0)]
+  BoundConv(name=/input.67, inputs=[/input.63, /93, /94], perturbed=True): [(BoundRelu(name=/323, inputs=[/input.67], perturbed=True), 0)]
+  BoundLinear(name=/input.71, inputs=[/348, /101, /102], perturbed=True): [(BoundRelu(name=/350, inputs=[/input.71], perturbed=True), 0)]
+  BoundLinear(name=/input.75, inputs=[/350, /103, /104], perturbed=True): [(BoundRelu(name=/352, inputs=[/input.75], perturbed=True), 0)]
+  BoundRelu(name=/352, inputs=[/input.75], perturbed=True): [(BoundPow(name=/353, inputs=[/352, /105], perturbed=True), 0)]
+  BoundPow(name=/353, inputs=[/352, /105], perturbed=True): [(BoundMul(name=/355/mul, inputs=[/353, /355/reciprocal], perturbed=True), 0)]
+  BoundReduceSum(name=/235, inputs=[/234], perturbed=True): [(BoundReciprocal(name=/236/reciprocal, inputs=[/235], perturbed=True), 0)]
+  BoundReciprocal(name=/236/reciprocal, inputs=[/235], perturbed=True): [(BoundMul(name=/236/mul, inputs=[/234, /236/reciprocal], perturbed=True), 1)]
+  BoundReduceSum(name=/354, inputs=[/353], perturbed=True): [(BoundReciprocal(name=/355/reciprocal, inputs=[/354], perturbed=True), 0)]
+  BoundReciprocal(name=/355/reciprocal, inputs=[/354], perturbed=True): [(BoundMul(name=/355/mul, inputs=[/353, /355/reciprocal], perturbed=True), 1)]
+Nonlinear functions:
+   BoundRelu(name=/140, inputs=[/input], perturbed=True)
+   BoundRelu(name=/162, inputs=[/input.3], perturbed=True)
+   BoundRelu(name=/173, inputs=[/input.11], perturbed=True)
+   BoundRelu(name=/184, inputs=[/input.19], perturbed=True)
+   BoundRelu(name=/204, inputs=[/input.27], perturbed=True)
+   BoundRelu(name=/231, inputs=[/input.31], perturbed=True)
+   BoundRelu(name=/233, inputs=[/input.35], perturbed=True)
+   BoundPow(name=/234, inputs=[/233, /59], perturbed=True)
+   BoundRelu(name=/259, inputs=[/input.39], perturbed=True)
+   BoundRelu(name=/281, inputs=[/input.43], perturbed=True)
+   BoundRelu(name=/292, inputs=[/input.51], perturbed=True)
+   BoundRelu(name=/303, inputs=[/input.59], perturbed=True)
+   BoundRelu(name=/323, inputs=[/input.67], perturbed=True)
+   BoundRelu(name=/350, inputs=[/input.71], perturbed=True)
+   BoundRelu(name=/352, inputs=[/input.75], perturbed=True)
+   BoundPow(name=/353, inputs=[/352, /105], perturbed=True)
+   BoundReciprocal(name=/236/reciprocal, inputs=[/235], perturbed=True)
+   BoundMul(name=/236/mul, inputs=[/234, /236/reciprocal], perturbed=True)
+   BoundReciprocal(name=/355/reciprocal, inputs=[/354], perturbed=True)
+   BoundMul(name=/355/mul, inputs=[/353, /355/reciprocal], perturbed=True)
+layer /140 using sparse-features alpha with shape [0]; unstable size 0; total size 128 ([1, 128])
+layer /140 start_node /input.31 using sparse-spec alpha [2, 1, 1, 0] with unstable size 0 total_size 256 output_shape torch.Size([256])
+layer /140 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /140 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /140 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /140 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /162 using sparse-features alpha with shape [0]; unstable size 0; total size 128 ([1, 128])
+layer /162 start_node /input.31 using sparse-spec alpha [2, 1, 1, 0] with unstable size 0 total_size 256 output_shape torch.Size([256])
+layer /162 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /162 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /162 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /162 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /173 using sparse-features alpha with shape [0]; unstable size 0; total size 640 ([1, 128, 5])
+layer /173 start_node /input.31 using sparse-spec alpha [2, 1, 1, 0] with unstable size 0 total_size 256 output_shape torch.Size([256])
+layer /173 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /173 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /173 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /173 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /184 using sparse-features alpha with shape [60]; unstable size 60; total size 640 ([1, 128, 5])
+layer /184 start_node /input.31 using sparse-spec alpha [2, 1, 1, 60] with unstable size 0 total_size 256 output_shape torch.Size([256])
+layer /184 start_node /234 using full alpha [2, 6, 1, 60] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /184 start_node /235 using full alpha [2, 1, 1, 60] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /184 start_node /236/reciprocal using full alpha [2, 1, 1, 60] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /184 start_node /357 using full alpha [2, 1, 1, 60] with unstable size None total_size 1 output_shape 1
+layer /204 using sparse-features alpha with shape [0]; unstable size 0; total size 384 ([1, 128, 3])
+layer /204 start_node /input.31 using sparse-spec alpha [2, 1, 1, 0] with unstable size 0 total_size 256 output_shape torch.Size([256])
+layer /204 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /204 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /204 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /204 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /231 using sparse-features alpha with shape [0]; unstable size 0; total size 256 ([1, 256])
+layer /231 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /231 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /231 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /231 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /233 using sparse-features alpha with shape [0]; unstable size 0; total size 6 ([1, 6])
+layer /233 start_node /234 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /233 start_node /235 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /233 start_node /236/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /233 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /259 using sparse-features alpha with shape [0]; unstable size 0; total size 128 ([1, 128])
+layer /259 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /259 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /259 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /259 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /281 using sparse-features alpha with shape [0]; unstable size 0; total size 128 ([1, 128])
+layer /281 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /281 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /281 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /281 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /292 using sparse-features alpha with shape [0]; unstable size 0; total size 640 ([1, 128, 5])
+layer /292 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /292 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /292 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /292 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /303 using sparse-features alpha with shape [17]; unstable size 17; total size 640 ([1, 128, 5])
+layer /303 start_node /353 using full alpha [2, 6, 1, 17] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /303 start_node /354 using full alpha [2, 1, 1, 17] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /303 start_node /355/reciprocal using full alpha [2, 1, 1, 17] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /303 start_node /357 using full alpha [2, 1, 1, 17] with unstable size None total_size 1 output_shape 1
+layer /323 using sparse-features alpha with shape [0]; unstable size 0; total size 384 ([1, 128, 3])
+layer /323 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /323 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /323 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /323 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /350 using sparse-features alpha with shape [0]; unstable size 0; total size 256 ([1, 256])
+layer /350 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /350 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /350 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /350 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+layer /352 using sparse-features alpha with shape [0]; unstable size 0; total size 6 ([1, 6])
+layer /352 start_node /353 using full alpha [2, 6, 1, 0] with unstable size None total_size 6 output_shape torch.Size([6])
+layer /352 start_node /354 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /352 start_node /355/reciprocal using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape torch.Size([1])
+layer /352 start_node /357 using full alpha [2, 1, 1, 0] with unstable size None total_size 1 output_shape 1
+Optimizable variables initialized.
+initial CROWN bounds: tensor([[217.27944946]], device='cuda:0') None
+Verified with initial CROWN!
+Verified by initial bound!
+Result: unsat
+Time: 8.725515842437744

@@ -1,0 +1,17 @@
+general:
+  enable_incomplete_verification: False
+  conv_mode: matrix
+model:
+  onnx_path: ../Benchmarks/onnx/pensieve_big_simple.onnx
+  onnx_quirks: "{'Reshape': {'fix_batch_size': True}}"
+  input_shape: [-1, 6, 8]
+specification:
+  vnnlib_path: ../Benchmarks/vnnlib/pensieve_1_1_3_8.vnnlib
+solver:
+  batch_size: 1
+bab:
+  branching:
+    method: sb
+    sb_coeff_thresh: 0.1
+    input_split:
+      enable: True
