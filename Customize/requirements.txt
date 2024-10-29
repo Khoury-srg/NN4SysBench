@@ -1,0 +1,18 @@
+filelock @ file:///home/conda/feedstock_root/build_artifacts/filelock_1726613473834/work
+fsspec @ file:///home/conda/feedstock_root/build_artifacts/fsspec_1729608855534/work
+gmpy2 @ file:///Users/runner/miniforge3/conda-bld/gmpy2_1725379817850/work
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1715127149914/work
+joblib==1.4.2
+MarkupSafe @ file:///Users/runner/miniforge3/conda-bld/markupsafe_1729351343187/work
+mpmath @ file:///home/conda/feedstock_root/build_artifacts/mpmath_1678228039184/work
+networkx @ file:///home/conda/feedstock_root/build_artifacts/networkx_1698504735452/work
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1724748654864/work/dist/numpy-2.0.2-cp39-cp39-macosx_11_0_arm64.whl#sha256=ae17bc06f47ea855f639fd3d8272472868244d270406268d03f291486d9e99fe
+onnx==1.17.0
+protobuf==5.28.3
+PyYAML==6.0.2
+scikit-learn==1.5.2
+scipy==1.13.1
+sympy @ file:///home/conda/feedstock_root/build_artifacts/sympy_1728484478345/work
+threadpoolctl==3.5.0
+torch @ file:///Users/runner/miniforge3/conda-bld/libtorch_1729805353803/work
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1717802530399/work

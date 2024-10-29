@@ -35,7 +35,7 @@ def write_txt(X, spec_path):
         f.write(f"y0 >= 0.5\n")
 
 
-def main(random_seed):
+def main(random_seed, size):
     random.seed(random_seed)
     vnn_dir_path = 'vnnlib'
     marabou_txt_dir_path = 'marabou_txt'

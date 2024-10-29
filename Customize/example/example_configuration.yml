@@ -1,0 +1,32 @@
+# Configuration File Template
+# Fill in the required information below.
+
+paths:
+  # Path to the pre-trained model (.pt file)
+  pt_path: ./example/example.pt
+
+  # Path to the Python script that contains the model
+  model_architecture_path: ./example/example.py
+  model_name: CircleClassifier
+inputs:
+  # List of input files (use '-' to list each file on a new line)
+  input_list:
+    - 1
+    - 2
+
+  # List of perturbation methods (use '-' to list each method)
+  perturbation_list:
+    - 1
+    - 2
+
+outputs:
+  # Range of output values (e.g., "0-1" for normalized output)
+  output_upper: 
+
+  # Number of output classes or required outputs
+  output_lower: 0
+
+other:
+  # Path where the outputs should be saved
+  output_path: ./output #default
+

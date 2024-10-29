@@ -134,7 +134,7 @@ def gen_uspec(uspecs):
 
 
 
-def main(seed):
+def main(seed, size):
     random.seed(seed)
     # load specs
     specs = load_spec()

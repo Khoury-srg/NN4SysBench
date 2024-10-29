@@ -21,8 +21,8 @@ RANDOM_SEED = 42
 RAND_RANGE = 1000
 SUMMARY_DIR = './test_results'
 ONNX_DIR = f'../../Benchmarks/onnx'
-NN_MODELS = ['./results/nn_model_ep_BEST_small_linear_10600.pth', './results/nn_model_ep_BEST_mid_linear_7200.pth',
-             './results/nn_model_ep_BEST_big_linear_10900.pth']
+NN_MODELS = ['./results/nn_model_ep_BEST_small_linear.pth', './results/nn_model_ep_BEST_mid_linear.pth',
+             './results/nn_model_ep_BEST_big_linear.pth']
 MODEL_LIST = ['small', 'mid', 'big']
 MODEL_TYPES = ['simple', 'parallel']
 VERIFIERS = ['abcrown', 'marabou']

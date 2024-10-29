@@ -259,7 +259,8 @@ def main(random_seed=RANDOM_SEED):
 
         if ep % model_save_interval == 0:
             actor_agent.save_model("./models/model_exec50_ep_" + str(ep))
-
+    
+    print(f"[Done] Finished training model")
 
 if __name__ == '__main__':
     main()

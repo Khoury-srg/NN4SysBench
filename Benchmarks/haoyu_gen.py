@@ -1,3 +1,7 @@
+'''
+This script it to generate the instances for Cardinality.
+'''
+
 import os
 import sys
 import math
@@ -176,7 +180,7 @@ def gene_spec():
     return csv_data
 
 
-def main(seed):
+def main(seed, size=10):
     random.seed(seed)
     return gene_spec()
 

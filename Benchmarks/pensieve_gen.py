@@ -1,25 +1,22 @@
-import sys
-import os
+'''
+This script it to generate the instances for Pensieve.
+'''
 
+import os
 import random
+import argparse
 import numpy as np
 
+# Global parameters
+P_RANGE = [0.05, 0.1, 0.5, 0.7, 1]  # Perturbation range for inputs
+MODELS = ['empty', 'small', 'mid', 'big']  # Available models
+SPEC_TYPES = [1, 2, 3]  # Different specification types
+DIMENSION_NUMBERS = [1, 2, 3, 4]  # Dimension numbers for perturbation
+# DIFFICULTY = ['easy'] # we will finetune difficulties in the future.
+DEFAULT_SIZES = [10, 10, 10]
 
 
-
-P_RANGE = [0.05, 0.1, 0.5, 0.7, 1]
-
-MODELS = ['empty', 'small', 'mid', 'big']
-DIFFICULTY = ['easy']
-SIZES = [10, 10, 10]
-SPEC_TYPES = [1, 2, 3]
-
-
-DIMENSION_NUMBERS=[1,2,3, 4]
-
-
-
-# responsible for writing the file
+# Function to write the VNNLIB format file
 def write_vnnlib(X, spec_type, spec_path, Y_shape=6):
     with open(spec_path, "w") as f:
         f.write("\n")
@@ -31,7 +28,7 @@ def write_vnnlib(X, spec_type, spec_path, Y_shape=6):
         if spec_type == SPEC_TYPES[2]:
             f.write(f"(declare-const Y_0 Real)\n")
         f.write("\n; Input constraints:\n")
-
+        
         for i in range(X.shape[0]):
             if i % 2 == 0:
                 f.write(f"(assert (>= X_{int(i / 2)} {X[i]}))\n")
@@ -40,18 +37,15 @@ def write_vnnlib(X, spec_type, spec_path, Y_shape=6):
 
         f.write("\n; Output constraints:\n")
         if spec_type == SPEC_TYPES[0] or spec_type == SPEC_TYPES[1]:
-            if spec_type == SPEC_TYPES[0]:
-                cannot_be_largest = 0
-            if spec_type == SPEC_TYPES[1]:
-                cannot_be_largest = Y_shape - 1
+            cannot_be_largest = 0 if spec_type == SPEC_TYPES[0] else Y_shape - 1
             for i in range(Y_shape):
-                if not i == cannot_be_largest:
+                if i != cannot_be_largest:
                     f.write(f"(assert (<= Y_{i} Y_{cannot_be_largest}))\n")
-
         if spec_type == SPEC_TYPES[2]:
             f.write(f"(assert (<= Y_0 0))\n\n")
 
 
+# Function to write the TXT format file
 def write_txt(X, spec_type, spec_path, Y_shape=6):
     with open(spec_path, "w") as f:
         for i in range(X.shape[0]):
@@ -61,14 +55,10 @@ def write_txt(X, spec_type, spec_path, Y_shape=6):
                 f.write(f"x{int((i - 1) / 2)} <= {X[i]}\n")
 
         if spec_type == SPEC_TYPES[0] or spec_type == SPEC_TYPES[1]:
-            if spec_type == SPEC_TYPES[0]:
-                cannot_be_largest = 0
-            if spec_type == SPEC_TYPES[1]:
-                cannot_be_largest = Y_shape - 1
+            cannot_be_largest = 0 if spec_type == SPEC_TYPES[0] else Y_shape - 1
             for i in range(Y_shape):
-                if not i == cannot_be_largest:
+                if i != cannot_be_largest:
                     f.write(f"+y{i} -y{cannot_be_largest} <= 0\n")
-
         if spec_type == SPEC_TYPES[2]:
             f.write(f"y0 <= 0\n\n")
 
@@ -148,8 +138,9 @@ def add_range(X, spec_type, p_range,dimension_number):
                     ret[i * 2 + 1] = X[i]
     return ret
 
-
-def parser(num):
+# Function to parse the selected number into property
+# eg: a number ABCDEF, CDEF is the instance index, B is the perturbation range index, A is the model index
+def my_parser(num):
     index = int(num % 10000)
     num = int(num / 10000)
 
@@ -167,63 +158,100 @@ def get_time(all_dic, index):
     return -1, -1
 
 
-def gene_spec():
+def gene_spec(sizes=DEFAULT_SIZES):
     vnn_dir_path = 'vnnlib'
     marabou_txt_dir_path = 'marabou_txt'
     onnx_dir_path = 'onnx'
     csv_data = []
-    if not os.path.exists(marabou_txt_dir_path):
-        os.makedirs(marabou_txt_dir_path)
-    if not os.path.exists(vnn_dir_path):
-        os.makedirs(vnn_dir_path)
+
+    # Ensure required directories exist
+    for dir_path in [vnn_dir_path, marabou_txt_dir_path, onnx_dir_path]:
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
 
     pensieve_src_path = './src/pensieve/pensieve_resources'
 
-
+    # Iterate over perturbation ranges
     for range_ptr in range(len(P_RANGE)):
+        p_range = P_RANGE[range_ptr]
+        
+        total = 0
+
+        # Iterate over dimension numbers
         for d_ptr in range(len(DIMENSION_NUMBERS)):
             dimension_number = DIMENSION_NUMBERS[d_ptr]
-            p_range = P_RANGE[range_ptr]
+
+            # Iterate over specification types
             for spec_type_ptr in range(len(SPEC_TYPES)):
-                total_num = 0
                 spec = SPEC_TYPES[spec_type_ptr]
+                total_num = 0
+                
+                # Load index for current specification type
                 indexes = list(np.load(pensieve_src_path + f'/pensieve_index_{spec}.npy'))
+                
+                # Randomly select indexes based on size for this spec type
+                chosen_index = random.sample(indexes, sizes[spec_type_ptr])
+
+                # TODO: This dictionary is for VNN competition. We will update it ASAP we have the standard timeout 
                 # dic = np.load(pensieve_src_path+f'/pen_{difficulty}.npy')
 
-                chosen_index = random.sample(indexes, SIZES[spec_type_ptr])
-
-
+                # Iterate through the chosen indexes
                 for i in chosen_index:
                     if i == 0:
                         continue
-                    index, _, model = parser(i)
-                    vnn_path = f'{vnn_dir_path}/pensieve_{spec}_{dimension_number}_{range_ptr}_{total_num}.vnnlib'
-                    # onnx_path = onnx_dir_path + '/pensieve_' + model + '_' + spec + '.onnx'
-                    input_array = np.load(pensieve_src_path + f'/pensieve_fixedInput_{spec}.npy')[index]
-                    input_array_perturbed = add_range(input_array, spec, p_range,dimension_number)
+                    
+                    # Parse index and retrieve model information
+                    index, _, _ = my_parser(i)
 
+                    # Define paths for VNNLIB and TXT files
+                    vnn_path = f'{vnn_dir_path}/pensieve_{spec}_{dimension_number}_{range_ptr}_{total_num}.vnnlib'
+                    txt_path = f'{marabou_txt_dir_path}/pensieve_{spec}_{dimension_number}_{range_ptr}_{total_num}.txt'
+                    
+                    # Load input array and generate perturbed inputs
+                    input_array = np.load(pensieve_src_path + f'/pensieve_fixedInput_{spec}.npy')[index]
+                    input_array_perturbed = add_range(input_array, spec, p_range, dimension_number)
+
+                    # Write the VNNLIB and TXT files
                     write_vnnlib(input_array_perturbed, spec, vnn_path)
                     print(f"[Done] generate {vnn_path}")
-                    txt_path = f'{marabou_txt_dir_path}/pensieve_{spec}_{dimension_number}_{range_ptr}_{total_num}.txt'
+
                     write_txt(input_array_perturbed, spec, txt_path)
                     print(f"[Done] generate {txt_path}")
+
                     total_num += 1
+                    total += 1
+
+                    # If timeout values are available, append the data to csv_data
+                    # TODO: The CSV data is for VNN competition, current we do not provide standard timeout for the benchmark.
                     # ground_truth, timeout = get_time(dic, i)
                     # if timeout == -1:
-                    #    continue
+                    #     continue
                     # csv_data.append([onnx_path, vnn_path, int(timeout)])
+
+    print(f"[Done] Successfully generate {total} instances for Pensieve.")
     return csv_data
 
 
-def main(random_seed):
+# Main function to run the specification generation
+def main(random_seed, sizes=DEFAULT_SIZES):
+    """
+    Main entry point of the script. Sets the random seed and triggers the generation of specifications.
+    :param random_seed: The seed for random number generation
+    :param sizes: A list of sizes for each specification type
+    """
     random.seed(random_seed)
-    return gene_spec()
+    return gene_spec(sizes)
 
 
+# Entry point for command-line execution
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: generate_properties.py <random seed>, default is 2024")
-        random_seed = 2024
-    else:
-        random_seed = int(sys.argv[1])
-    main(random_seed)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, default=2024, help="Random seed for reproducibility")
+    parser.add_argument("--sizes", type=int, nargs=3, default=[10, 10, 10], help="Sizes for each specification type")
+    args = parser.parse_args()
+
+    random_seed = args.seed
+    sizes = args.sizes
+
+    # Execute the main function with the provided seed and sizes
+    main(random_seed, sizes)

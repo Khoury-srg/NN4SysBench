@@ -2,15 +2,11 @@
 Most code are borrowedfrom Haoyu
 
 
-
-## Overview
-
-
 ## Process data
 run 
 
 ```
-process-data.py
+python process-data.py
 ```
 will generate 2 csv fils: crime data and no crime data
 
@@ -18,7 +14,7 @@ will generate 2 csv fils: crime data and no crime data
 run 
 
 ```
-train.py
+python train.py
 ```
 
 ## Testing Models
@@ -26,5 +22,5 @@ train.py
 run 
 
 ```
-test.py
+python test.py
 ```
