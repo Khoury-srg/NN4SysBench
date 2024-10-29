@@ -44,5 +44,5 @@ More designed specifications that write in vnnlib format can be found in directo
 
 Our benchmark provides pairs of (i) learned cardinality (trained MSCN with different hidden size) and (ii) corresponding specifications, so that covers varied difficulties for verification tools.
 
-## Verification Instructions
+Note: Download mscn_2048d_dual.onnx and mscn_2048d.onnx from google drive (link will be updated later)
 
