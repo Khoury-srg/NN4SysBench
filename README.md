@@ -1,4 +1,5 @@
 # NN4SysBench: Characterizing Neural Network Verification for Computer Systems
+This is the repository for paper [NN4SysBench: Characterizing Neural Network Verification for Computer Systems](https://naizhengtan.github.io/doc/papers/lin24nn4sysbench.pdf)
 ## Introduction
 We propose a benchmark suite for neural network verification for systems 
 (NN4Sys) in this repository. This suite includes verification 
